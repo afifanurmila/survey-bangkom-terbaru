@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Hasil & Analisis Survei Bangkom - Deputi I LAN RI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <!-- Header Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white font-extrabold text-xl shadow-md shadow-blue-500/20">
+                    D1
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold tracking-widest uppercase bg-rose-100 text-rose-700 px-2 py-0.5 rounded">LAN RI</span>
+                        <span class="text-xs text-slate-500 font-semibold">Kedeputian Bidang Peningkatan Kualitas Kebijakan</span>
+                    </div>
+                    <h1 class="text-lg font-extrabold text-slate-900 tracking-tight">Dashboard Hasil & Analisis Survei Bangkom</h1>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center flex-wrap gap-2.5">
+                <!-- Status Badge -->
+                <div id="badge-status-source" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span id="text-status-source">Mode Simulasi (Demo Data)</span>
+                </div>
+
+                <!-- Toggle Demo / Live -->
+                <button onclick="toggleDataSource()" id="btn-toggle-source" class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition flex items-center gap-1.5 shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                    <span>Ganti ke Live Supabase</span>
+                </button>
+
+                <!-- Tombol Refresh -->
+                <button onclick="loadAllData()" class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-sm" title="Refresh Data">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                </button>
+
+                <!-- Tombol Export CSV -->
+                <button onclick="exportToCSV()" class="text-xs font-bold px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center gap-1.5 shadow-sm shadow-emerald-600/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span>Export Excel / CSV</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- ======================================================== -->
+        <!-- 1. KPI SUMMARY CARDS                                     -->
+        <!-- ======================================================== -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Card 1: Total Responden -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow transition">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Partisipasi</span>
+                    <span class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </span>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="kpi-total-responden" class="text-3xl font-extrabold text-slate-900">0</span>
+                    <span class="text-sm text-slate-400 font-medium">/ 58 Pegawai</span>
+                </div>
+                <div class="mt-3">
+                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div id="kpi-progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between text-[11px] font-semibold text-slate-500 mt-1.5">
+                        <span id="kpi-persen-responden">0% Terisi</span>
+                        <span id="kpi-sisa-responden">58 Belum</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Top Priority Training -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow transition">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Topik Prioritas #1</span>
+                    <span class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </span>
+                </div>
+                <p id="kpi-top-topik" class="text-base font-bold text-slate-900 line-clamp-1" title="Topik Paling Banyak Dipilih">-</p>
+                <p class="text-xs text-slate-500 mt-1">
+                    Dipilih oleh <span id="kpi-top-topik-count" class="font-bold text-amber-600">0</span> pegawai
+                </p>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                    <span>Subkompetensi:</span>
+                    <span id="kpi-top-topik-sub" class="font-semibold text-slate-700">-</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Preferensi Jadwal Terbanyak -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow transition">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Jadwal Terfavorit</span>
+                    <span class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </span>
+                </div>
+                <div class="flex items-baseline gap-1.5">
+                    <span id="kpi-top-hari" class="text-2xl font-bold text-slate-900">-</span>
+                    <span id="kpi-top-waktu" class="text-sm font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">-</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Pilihan terbanyak untuk pelaksanaan kelas</p>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                    <span>Metode Dominan:</span>
+                    <span id="kpi-top-metode" class="font-semibold text-slate-700">-</span>
+                </div>
+            </div>
+
+            <!-- Card 4: Calon Narasumber Internal -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow transition">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Knowledge Sharing</span>
+                    <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"></path></svg>
+                    </span>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <span id="kpi-total-sharing" class="text-3xl font-extrabold text-emerald-600">0</span>
+                    <span class="text-xs font-bold text-slate-500">Pegawai Bersedia</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Siap berkontribusi narasumber internal</p>
+                <div class="mt-3 pt-2.5 border-t border-slate-100">
+                    <a href="#section-knowledge-sharing" class="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center justify-between group">
+                        <span>Lihat Profil Keahlian</span>
+                        <span class="group-hover:translate-x-1 transition">→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- 2. GRAFIK & ANALISIS VISUAL (CHART.JS)                   -->
+        <!-- ======================================================== -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Chart 1: Ranking Kebutuhan Pelatihan (2 Columns wide) -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm lg:col-span-2 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-900">Ranking Prioritas Kebutuhan Pelatihan Bangkom</h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Frekuensi topik pelatihan yang paling banyak dipilih oleh pegawai Deputi I</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-[11px] font-semibold">
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500"></span><span class="text-slate-600 mr-2">Analisis</span>
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span><span class="text-slate-600 mr-2">Advokasi</span>
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500"></span><span class="text-slate-600 mr-2">Stakeholder</span>
+                            <span class="inline-block w-2.5 h-2.5 rounded-full bg-purple-500"></span><span class="text-slate-600">Ekosistem</span>
+                        </div>
+                    </div>
+                    <div class="h-[420px] w-full mt-4">
+                        <canvas id="chartTopik"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 2: Partisipasi per Unit Kerja (1 Column wide) -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="pb-4 border-b border-slate-100">
+                        <h2 class="text-base font-bold text-slate-900">Partisipasi per Unit Kerja</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Proporsi pegawai yang sudah merespons survei</p>
+                    </div>
+                    <div class="h-[280px] w-full mt-4 flex items-center justify-center">
+                        <canvas id="chartUnit"></canvas>
+                    </div>
+                </div>
+                <div id="unit-legend-breakdown" class="mt-4 pt-3 border-t border-slate-100 space-y-2 text-xs">
+                    <!-- Dinamis via JS -->
+                </div>
+            </div>
+
+            <!-- Chart 3: Preferensi Hari Pelaksanaan -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+                <div class="pb-4 border-b border-slate-100">
+                    <h2 class="text-base font-bold text-slate-900">Pilihan Hari Pelaksanaan</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Sebaran hari kerja yang paling leluasa bagi pegawai</p>
+                </div>
+                <div class="h-[220px] w-full mt-4">
+                    <canvas id="chartHari"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 4: Preferensi Waktu & Jam -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+                <div class="pb-4 border-b border-slate-100">
+                    <h2 class="text-base font-bold text-slate-900">Preferensi Waktu / Jam</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Sesi Pagi (09.00-12.00) vs Sesi Siang (13.30-16.30)</p>
+                </div>
+                <div class="h-[220px] w-full mt-4 flex items-center justify-center">
+                    <canvas id="chartWaktu"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 5: Preferensi Metode Pelatihan -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm">
+                <div class="pb-4 border-b border-slate-100">
+                    <h2 class="text-base font-bold text-slate-900">Metode Pelatihan Pilihan</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Offline (Tatap Muka) vs Online (Daring) vs Lainnya</p>
+                </div>
+                <div class="h-[220px] w-full mt-4 flex items-center justify-center">
+                    <canvas id="chartMetode"></canvas>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- 3. KATALOG KNOWLEDGE SHARING (INTERNAL TALENT POOL)      -->
+        <!-- ======================================================== -->
+        <section id="section-knowledge-sharing" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Talent Pool: Narasumber Knowledge Sharing Internal</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Pegawai yang bersedia menjadi narasumber beserta bidang keahlian/pengalaman yang dapat dibagikan</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="badge-total-sharing-list" class="text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full">0 Pegawai</span>
+                </div>
+            </div>
+
+            <!-- List Grid Calon Narasumber -->
+            <div id="grid-knowledge-sharing" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Di-render dinamis oleh JS -->
+            </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- 4. TABEL REKAPITULASI JAWABAN RESPONDEN LENGKAP          -->
+        <!-- ======================================================== -->
+        <section class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-100 gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Daftar Rekapitulasi Data Responden</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Tabel rincian lengkap jawaban survei setiap pegawai Deputi I LAN RI</p>
+                </div>
+                
+                <!-- Filter & Search Controls -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                    <!-- Filter Unit -->
+                    <select id="filter-unit" onchange="renderTable()" class="text-xs font-medium px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 text-slate-700">
+                        <option value="">Semua Unit Kerja</option>
+                        <option value="Direktorat Advokasi Kebijakan">Direktorat Advokasi Kebijakan</option>
+                        <option value="Direktorat Diseminasi dan Publikasi Kebijakan">Direktorat Diseminasi & Publikasi</option>
+                        <option value="Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara">Direktorat Strategi Kebijakan</option>
+                        <option value="Sekretariat Utama / Deputi">Kedeputian Bidang Peningkatan Kualitas Kebijakan</option>
+                    </select>
+
+                    <!-- Filter Bersedia Berbagi -->
+                    <select id="filter-sharing" onchange="renderTable()" class="text-xs font-medium px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 text-slate-700">
+                        <option value="">Semua Status Sharing</option>
+                        <option value="ya">Bersedia Sharing</option>
+                        <option value="tidak">Belum Bersedia</option>
+                    </select>
+
+                    <!-- Search Input -->
+                    <div class="relative">
+                        <input type="text" id="search-pegawai" oninput="renderTable()" placeholder="Cari nama atau NIP..." class="text-xs px-3 py-2 pl-8 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 w-full sm:w-56 text-slate-800">
+                        <svg class="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="overflow-x-auto custom-scrollbar border border-slate-200 rounded-xl">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
+                            <th class="py-3 px-4 w-12 text-center">No</th>
+                            <th class="py-3 px-4">Nama Pegawai & NIP</th>
+                            <th class="py-3 px-4">Unit Kerja & Jabatan</th>
+                            <th class="py-3 px-4">Topik Terpilih</th>
+                            <th class="py-3 px-4">Preferensi Jadwal</th>
+                            <th class="py-3 px-4 text-center">Sharing?</th>
+                            <th class="py-3 px-4 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body-responden" class="divide-y divide-slate-100 text-slate-700">
+                        <!-- Diisi via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-slate-500 pt-2">
+                <div>
+                    Menampilkan <span id="table-filtered-count" class="font-bold text-slate-800">0</span> dari <span id="table-total-count" class="font-bold text-slate-800">0</span> responden
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Detail Responden -->
+    <div id="modal-detail" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 class="text-base font-bold text-slate-900">Rincian Lengkap Jawaban Responden</h3>
+                <button onclick="closeModalDetail()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="modal-content" class="space-y-4 text-xs">
+                <!-- Isi Modal dari JS -->
+            </div>
+            <div class="pt-3 border-t border-slate-100 flex justify-end">
+                <button onclick="closeModalDetail()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 text-xs text-slate-400 border-t border-slate-200 bg-white mt-12">
+        © 2026 Kedeputian Bidang Peningkatan Kualitas Kebijakan Administrasi Negara - Lembaga Administrasi Negara RI
+    </footer>
+
+    <!-- LOGIKA & DATA JAVASCRIPT -->
+    <script>
+        // ========================================================
+        // KONFIGURASI SUPABASE (Sama dengan index.html)
+        // ========================================================
+        const SUPABASE_URL = "";       // Masukkan Supabase Project URL di sini jika sudah ada
+        const SUPABASE_ANON_KEY = "";  // Masukkan Supabase Anon Key di sini jika sudah ada
+        let supabaseClient = null;
+
+        if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        // State Dashboard
+        let isUsingDemoData = true; // Default ke data simulasi jika belum connect Supabase
+        let allResponses = [];
+        let chartInstances = {};
+
+        // ========================================================
+        // 25 DATA SIMULASI (DEMO) REALISTIS BERDASARKAN PEGAWAI LAN
+        // ========================================================
+        const DEMO_RESPONSES = [
+            {
+                id: 1,
+                created_at: "2026-10-06T08:30:00Z",
+                nama: "Dr. Agus Sudrajat, S.Sos., M.A.",
+                nip: "196708041990031001",
+                unit_organisasi: "Kedeputian Bidang Peningkatan Kualitas Kebijakan Administrasi Negara",
+                pangkat_golongan: "Pembina Utama - IV/e",
+                jabatan: "Deputi Bidang Peningkatan Kualitas Kebijakan Administrasi Negara",
+                jenjang_jabatan: "Pimpinan Tinggi Madya",
+                masa_kerja: 36,
+                topik_pelatihan: ["Adaptive Governance", "Reformasi Birokrasi", "Policy Impact Assessment", "Advokasi & Komunikasi Kebijakan"],
+                topik_lainnya: null,
+                preferensi_hari: ["Selasa", "Kamis"],
+                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "ya",
+                bidang_keahlian: "Strategic Leadership & Tata Kelola Reformasi Kebijakan Publik Nasional"
+            },
+            {
+                id: 2,
+                created_at: "2026-10-06T09:15:00Z",
+                nama: "Widhi Novianto, S.Sos., M.Si.",
+                nip: "197211181997021002",
+                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
+                pangkat_golongan: "Pembina Utama Madya - IV/d",
+                jabatan: "Direktur Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
+                jenjang_jabatan: "Pimpinan Tinggi Pratama",
+                masa_kerja: 29,
+                topik_pelatihan: ["Regulatory Impact Assessment (RIA)", "Analisis Formulasi Kebijakan", "Policy Impact Assessment"],
+                topik_lainnya: null,
+                preferensi_hari: ["Rabu"],
+                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "ya",
+                bidang_keahlian: "Analisis Kelayakan & Desain Regulasi Berbasis Bukti (Evidence-Based)"
+            },
+            {
+                id: 3,
+                created_at: "2026-10-06T10:00:00Z",
+                nama: "Drs. Haris Faozan, M.Si.",
+                nip: "196909061994031001",
+                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
+                pangkat_golongan: "Pembina Utama - IV/e",
+                jabatan: "Analis Kebijakan Ahli Utama",
+                jenjang_jabatan: "Fungsional Ahli Utama",
+                masa_kerja: 32,
+                topik_pelatihan: ["Monitoring & Evaluasi Kebijakan", "Policy Impact Assessment", "Adaptive Governance"],
+                topik_lainnya: null,
+                preferensi_hari: ["Selasa", "Rabu"],
+                preferensi_waktu: ["Siang (13.30 - 16.30 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)", "Online (Daring / Webinar)"],
+                bersedia_berbagi: "ya",
+                bidang_keahlian: "Metodologi Evaluasi Kinerja Kebijakan & Teori Perubahan Publik"
+            },
+            {
+                id: 4,
+                created_at: "2026-10-06T11:20:00Z",
+                nama: "Budiarjo, S.Sos., M.A.",
+                nip: "197201051998021001",
+                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
+                pangkat_golongan: "Pembina Utama Muda - IV/c",
+                jabatan: "Analis Kebijakan Ahli Madya",
+                jenjang_jabatan: "Fungsional Ahli Madya",
+                masa_kerja: 28,
+                topik_pelatihan: ["Policy Impact Assessment", "Public Consultation", "Co-Creation & Collaborative Innovation"],
+                topik_lainnya: null,
+                preferensi_hari: ["Senin", "Rabu"],
+                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
+                metode_pelatihan: ["Online (Daring / Webinar)"],
+                bersedia_berbagi: "tidak",
+                bidang_keahlian: null
+            },
+            {
+                id: 5,
+                created_at: "2026-10-06T13:10:00Z",
+                nama: "Dewi Oktaviani, S.IP., M.H.",
+                nip: "198010142005012001",
+                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
+                pangkat_golongan: "Pembina - IV/a",
+                jabatan: "Analis Kebijakan Ahli Madya",
+                jenjang_jabatan: "Fungsional Ahli Madya",
+                masa_kerja: 21,
+                topik_pelatihan: ["Legal Drafting", "Regulatory Impact Assessment (RIA)", "Advokasi & Komunikasi Kebijakan"],
+                topik_lainnya: null,
+                preferensi_hari: ["Selasa"],
+                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "ya",
+                bidang_keahlian: "Harmonisasi Peraturan Perundang-undangan & Teknik Legal Drafting"
+            },
+            {
+                id: 6,
+                created_at: "2026-10-06T14:40:00Z",
+                nama: "Sri Haryati, SH",
+                nip: "196903272002122001",
+                unit_organisasi: "Direktorat Advokasi Kebijakan",
+                pangkat_golongan: "Pembina - IV/a",
+                jabatan: "Direktur Advokasi Kebijakan",
+                jenjang_jabatan: "Pimpinan Tinggi Pratama",
+                masa_kerja: 24,
+                topik_pelatihan: ["Advokasi & Komunikasi Kebijakan", "Stakeholder Engagement (Kebijakan)", "Inovasi Kebijakan & Program"],
+                topik_lainnya: null,
+                preferensi_hari: ["Kamis"],
+                preferensi_waktu: ["Siang (13.30 - 16.30 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "ya",
+                bidang_keahlian: "Teknik Policy Pitching dan Negosiasi Lintas Instansi Pemerintah"
+            },
+            {
+                id: 7,
+                created_at: "2026-10-06T15:05:00Z",
+                nama: "Hari Nugroho, S.IP",
+                nip: "197805212006041003",
+                unit_organisasi: "Direktorat Advokasi Kebijakan",
+                pangkat_golongan: "Penata Tingkat I - III/d",
+                jabatan: "Analis Kebijakan Ahli Muda",
+                jenjang_jabatan: "Fungsional Ahli Muda",
+                masa_kerja: 20,
+                topik_pelatihan: ["Stakeholder Engagement (Kebijakan)", "Public Consultation", "Advokasi & Komunikasi Kebijakan"],
+                topik_lainnya: null,
+                preferensi_hari: ["Senin", "Selasa"],
+                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "ya",
+                bidang_keahlian: "Fasilitasi Forum Konsultasi Publik dan Pemetaan Kekuatan Aktor Kebijakan"
+            },
+            {
+                id: 8,
+                created_at: "2026-10-07T08:10:00Z",
+                nama: "Rahmat Hidayat, S.Kom., M.TI",
+                nip: "198801152014021002",
+                unit_organisasi: "Direktorat Diseminasi dan Publikasi Kebijakan",
+                pangkat_golongan: "Penata - III/c",
+                jabatan: "Pranata Komputer Ahli Muda",
+                jenjang_jabatan: "Fungsional Ahli Muda",
+                masa_kerja: 12,
+                topik_pelatihan: ["Big Data Analytics untuk Kebijakan", "Data Science & Visualisasi Data", "Public Sector Innovation"],
+                topik_lainnya: ["Pemanfaatan AI untuk Analisis Sentimen Kebijakan Publik"],
+                preferensi_hari: ["Rabu", "Kamis"],
+                preferensi_waktu: ["Siang (13.30 - 16.30 WIB)"],
+                metode_pelatihan: ["Online (Daring / Webinar)"],
+                bersedia_berbagi: "ya",
+                bidang_keahlian: "Visualisasi Data Kebijakan menggunakan Dashboard Interaktif & Python"
+            },
+            {
+                id: 9,
+                created_at: "2026-10-07T08:45:00Z",
+                nama: "Anisa Fitriani, S.Sos",
+                nip: "199404122019022004",
+                unit_organisasi: "Direktorat Diseminasi dan Publikasi Kebijakan",
+                pangkat_golongan: "Penata Muda Tingkat I - III/b",
+                jabatan: "Analis Kebijakan Ahli Pertama",
+                jenjang_jabatan: "Fungsional Ahli Pertama",
+                masa_kerja: 7,
+                topik_pelatihan: ["Penyusunan Policy Brief & Policy Paper", "Advokasi & Komunikasi Kebijakan", "Design Thinking"],
+                topik_lainnya: null,
+                preferensi_hari: ["Selasa"],
+                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "tidak",
+                bidang_keahlian: null
+            },
+            {
+                id: 10,
+                created_at: "2026-10-07T09:00:00Z",
+                nama: "Evy Trisulo Dianasari, SH., MH.",
+                nip: "197303182001122001",
+                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
+                pangkat_golongan: "Pembina - IV/a",
+                jabatan: "Penelaah Teknis Kebijakan",
+                jenjang_jabatan: "Pelaksana",
+                masa_kerja: 25,
+                topik_pelatihan: ["Legal Drafting", "Regulatory Impact Assessment (RIA)", "Analisis Formulasi Kebijakan"],
+                topik_lainnya: null,
+                preferensi_hari: ["Kamis"],
+                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "ya",
+                bidang_keahlian: "Teknik Penelaahan Aspek Yuridis dan Konsistensi Regulasi Pusat-Daerah"
+            },
+            {
+                id: 11,
+                created_at: "2026-10-07T09:12:00Z",
+                nama: "Amira Amnihati Rumhana, S.E.",
+                nip: "199809262021012001",
+                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
+                pangkat_golongan: "Penata Muda - III/a",
+                jabatan: "Pengolah Data dan Informasi",
+                jenjang_jabatan: "Pelaksana",
+                masa_kerja: 5,
+                topik_pelatihan: ["Data Science & Visualisasi Data", "Big Data Analytics untuk Kebijakan", "Monitoring & Evaluasi Kebijakan"],
+                topik_lainnya: null,
+                preferensi_hari: ["Rabu"],
+                preferensi_waktu: ["Siang (13.30 - 16.30 WIB)"],
+                metode_pelatihan: ["Online (Daring / Webinar)"],
+                bersedia_berbagi: "tidak",
+                bidang_keahlian: null
+            },
+            {
+                id: 12,
+                created_at: "2026-10-07T09:25:00Z",
+                nama: "Lina Mettasari, SE",
+                nip: "197605112007012004",
+                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
+                pangkat_golongan: "Penata Tingkat I - III/d",
+                jabatan: "Pengolah Data dan Informasi",
+                jenjang_jabatan: "Pelaksana",
+                masa_kerja: 19,
+                topik_pelatihan: ["Monitoring & Evaluasi Kebijakan", "Policy Impact Assessment", "Design Thinking"],
+                topik_lainnya: null,
+                preferensi_hari: ["Selasa", "Kamis"],
+                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "tidak",
+                bidang_keahlian: null
+            },
+            {
+                id: 13,
+                created_at: "2026-10-07T09:30:00Z",
+                nama: "Bambang Suprayogo, S.IP., M.PA",
+                nip: "198308192008121003",
+                unit_organisasi: "Direktorat Advokasi Kebijakan",
+                pangkat_golongan: "Pembina - IV/a",
+                jabatan: "Analis Kebijakan Ahli Madya",
+                jenjang_jabatan: "Fungsional Ahli Madya",
+                masa_kerja: 18,
+                topik_pelatihan: ["Advokasi & Komunikasi Kebijakan", "Adaptive Governance", "Inovasi Kebijakan & Program"],
+                topik_lainnya: null,
+                preferensi_hari: ["Senin", "Rabu"],
+                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "ya",
+                bidang_keahlian: "Praktik Advokasi Isu Strategis Kebijakan di Tingkat Kementerian/Lembaga"
+            },
+            {
+                id: 14,
+                created_at: "2026-10-07T09:40:00Z",
+                nama: "Nurul Aini, S.Sos",
+                nip: "199202042018012002",
+                unit_organisasi: "Direktorat Diseminasi dan Publikasi Kebijakan",
+                pangkat_golongan: "Penata Muda Tingkat I - III/b",
+                jabatan: "Pranata Humas Ahli Pertama",
+                jenjang_jabatan: "Fungsional Ahli Pertama",
+                masa_kerja: 8,
+                topik_pelatihan: ["Advokasi & Komunikasi Kebijakan", "Penyusunan Policy Brief & Policy Paper", "Design Thinking"],
+                topik_lainnya: null,
+                preferensi_hari: ["Kamis"],
+                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "ya",
+                bidang_keahlian: "Penulisan Siaran Pers Kebijakan & Pengelolaan Media Komunikasi Publik"
+            },
+            {
+                id: 15,
+                created_at: "2026-10-07T09:45:00Z",
+                nama: "Suhanda",
+                nip: "196901022006041002",
+                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
+                pangkat_golongan: "Pengatur Muda Tingkat I - II/b",
+                jabatan: "Pengadministrasi Perkantoran",
+                jenjang_jabatan: "Pelaksana",
+                masa_kerja: 20,
+                topik_pelatihan: ["Manajemen Perubahan (Change Management)", "Reformasi Birokrasi"],
+                topik_lainnya: null,
+                preferensi_hari: ["Selasa"],
+                preferensi_waktu: ["Siang (13.30 - 16.30 WIB)"],
+                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
+                bersedia_berbagi: "tidak",
+                bidang_keahlian: null
+            }
+        ];
+
+        // Definisi Kategori Subkompetensi untuk Warna Chart
+        const TOPIK_CATEGORIES = {
+            "Policy Impact Assessment": { cat: "Analisis Kebijakan", color: "#3b82f6" },
+            "Monitoring & Evaluasi Kebijakan": { cat: "Analisis Kebijakan", color: "#3b82f6" },
+            "Analisis Formulasi Kebijakan": { cat: "Analisis Kebijakan", color: "#3b82f6" },
+            "Penyusunan Policy Brief & Policy Paper": { cat: "Analisis Kebijakan", color: "#3b82f6" },
+            "Big Data Analytics untuk Kebijakan": { cat: "Analisis Kebijakan", color: "#3b82f6" },
+            "Data Science & Visualisasi Data": { cat: "Analisis Kebijakan", color: "#3b82f6" },
+            "Advokasi & Komunikasi Kebijakan": { cat: "Advokasi Kebijakan", color: "#10b981" },
+            "Stakeholder Engagement (Kebijakan)": { cat: "Advokasi Kebijakan", color: "#10b981" },
+            "Public Consultation": { cat: "Advokasi Kebijakan", color: "#10b981" },
+            "Regulatory Impact Assessment (RIA)": { cat: "Advokasi Kebijakan", color: "#10b981" },
+            "Legal Drafting": { cat: "Advokasi Kebijakan", color: "#10b981" },
+            "Inovasi Kebijakan & Program": { cat: "Advokasi Kebijakan", color: "#10b981" },
+            "Stakeholder Engagement (Pelayanan Publik)": { cat: "Manajemen Stakeholders", color: "#f59e0b" },
+            "Co-Creation & Collaborative Innovation": { cat: "Manajemen Stakeholders", color: "#f59e0b" },
+            "Adaptive Governance": { cat: "Manajemen Ekosistem", color: "#a855f7" },
+            "Reformasi Birokrasi": { cat: "Manajemen Ekosistem", color: "#a855f7" },
+            "Manajemen Perubahan (Change Management)": { cat: "Manajemen Ekosistem", color: "#a855f7" },
+            "Public Sector Innovation": { cat: "Manajemen Ekosistem", color: "#a855f7" },
+            "Design Thinking": { cat: "Manajemen Ekosistem", color: "#a855f7" }
+        };
+
+        // ========================================================
+        // LOAD DATA & CONTROLLER
+        // ========================================================
+        async function loadAllData() {
+            if (isUsingDemoData || !supabaseClient) {
+                allResponses = [...DEMO_RESPONSES];
+                updateBadgeStatus(false);
+            } else {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('survey_responses')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error) {
+                        console.warn("Gagal load dari Supabase:", error);
+                        alert("Tidak dapat mengambil data dari Supabase: " + error.message + "\nBeralih kembali ke Mode Simulasi.");
+                        isUsingDemoData = true;
+                        allResponses = [...DEMO_RESPONSES];
+                        updateBadgeStatus(false);
+                    } else if (!data || data.length === 0) {
+                        alert("Tabel Supabase masih kosong. Menampilkan data simulasi sebagai contoh visualisasi.");
+                        isUsingDemoData = true;
+                        allResponses = [...DEMO_RESPONSES];
+                        updateBadgeStatus(false);
+                    } else {
+                        allResponses = data;
+                        updateBadgeStatus(true);
+                    }
+                } catch (err) {
+                    console.error("Fetch error:", err);
+                    allResponses = [...DEMO_RESPONSES];
+                    updateBadgeStatus(false);
+                }
+            }
+
+            renderKPIs();
+            renderCharts();
+            renderKnowledgeSharing();
+            renderTable();
+        }
+
+        function updateBadgeStatus(isLive) {
+            const badge = document.getElementById('badge-status-source');
+            const text = document.getElementById('text-status-source');
+            const btn = document.getElementById('btn-toggle-source');
+
+            if (isLive) {
+                badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200";
+                text.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-1 inline-block"></span>Live Supabase (' + allResponses.length + ' Data)';
+                btn.innerHTML = '<span>Ganti ke Mode Demo</span>';
+            } else {
+                badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200";
+                text.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse mr-1 inline-block"></span>Mode Simulasi (' + allResponses.length + ' Data Demo)';
+                btn.innerHTML = '<span>Ganti ke Live Supabase</span>';
+            }
+        }
+
+        function toggleDataSource() {
+            if (!supabaseClient && isUsingDemoData) {
+                alert("URL dan Anon Key Supabase belum diisi pada file dashboard.html.\nSilakan masukkan kredensial Supabase Anda di script dashboard.html untuk mengaktifkan koneksi database langsung.");
+                return;
+            }
+            isUsingDemoData = !isUsingDemoData;
+            loadAllData();
+        }
+
+        // ========================================================
+        // 1. RENDER KPIS
+        // ========================================================
+        function renderKPIs() {
+            const total = allResponses.length;
+            const targetTotal = 58;
+            const pct = Math.round((total / targetTotal) * 100);
+
+            document.getElementById('kpi-total-responden').innerText = total;
+            document.getElementById('kpi-progress-bar').style.width = Math.min(pct, 100) + '%';
+            document.getElementById('kpi-persen-responden').innerText = pct + '% Terisi';
+            document.getElementById('kpi-sisa-responden').innerText = Math.max(0, targetTotal - total) + ' Belum';
+
+            // Hitung topik terfavorit
+            const topikCounts = {};
+            allResponses.forEach(r => {
+                if (Array.isArray(r.topik_pelatihan)) {
+                    r.topik_pelatihan.forEach(t => {
+                        topikCounts[t] = (topikCounts[t] || 0) + 1;
+                    });
+                }
+            });
+
+            let topTopik = "-";
+            let topTopikCount = 0;
+            for (const [k, v] of Object.entries(topikCounts)) {
+                if (v > topTopikCount) {
+                    topTopikCount = v;
+                    topTopik = k;
+                }
+            }
+            document.getElementById('kpi-top-topik').innerText = topTopik;
+            document.getElementById('kpi-top-topik').title = topTopik;
+            document.getElementById('kpi-top-topik-count').innerText = topTopikCount;
+            document.getElementById('kpi-top-topik-sub').innerText = TOPIK_CATEGORIES[topTopik]?.cat || 'Umum';
+
+            // Hitung Jadwal Terfavorit (Hari & Waktu)
+            const hariCounts = {};
+            const waktuCounts = {};
+            const metodeCounts = {};
+            allResponses.forEach(r => {
+                if (Array.isArray(r.preferensi_hari)) {
+                    r.preferensi_hari.forEach(h => hariCounts[h] = (hariCounts[h] || 0) + 1);
+                }
+                if (Array.isArray(r.preferensi_waktu)) {
+                    r.preferensi_waktu.forEach(w => waktuCounts[w] = (waktuCounts[w] || 0) + 1);
+                }
+                if (Array.isArray(r.metode_pelatihan)) {
+                    r.metode_pelatihan.forEach(m => {
+                        const simpleM = m.includes("Offline") ? "Offline" : (m.includes("Online") ? "Online" : "Lainnya");
+                        metodeCounts[simpleM] = (metodeCounts[simpleM] || 0) + 1;
+                    });
+                }
+            });
+
+            const topHari = Object.keys(hariCounts).reduce((a, b) => hariCounts[a] > hariCounts[b] ? a : b, "-");
+            const topWaktuFull = Object.keys(waktuCounts).reduce((a, b) => waktuCounts[a] > waktuCounts[b] ? a : b, "-");
+            const topWaktuShort = topWaktuFull.includes("Pagi") ? "Pagi" : (topWaktuFull.includes("Siang") ? "Siang" : "-");
+            const topMetode = Object.keys(metodeCounts).reduce((a, b) => metodeCounts[a] > metodeCounts[b] ? a : b, "-");
+
+            document.getElementById('kpi-top-hari').innerText = topHari;
+            document.getElementById('kpi-top-waktu').innerText = topWaktuShort;
+            document.getElementById('kpi-top-metode').innerText = topMetode;
+
+            // Hitung Knowledge Sharing
+            const sharingCount = allResponses.filter(r => r.bersedia_berbagi === 'ya').length;
+            document.getElementById('kpi-total-sharing').innerText = sharingCount;
+        }
+
+        // ========================================================
+        // 2. RENDER CHARTS (CHART.JS)
+        // ========================================================
+        function renderCharts() {
+            // Hancurkan chart lama jika ada
+            Object.values(chartInstances).forEach(c => c && c.destroy());
+
+            // 1. Chart Topik Pelatihan (Horizontal Bar)
+            const topikCounts = {};
+            allResponses.forEach(r => {
+                if (Array.isArray(r.topik_pelatihan)) {
+                    r.topik_pelatihan.forEach(t => {
+                        topikCounts[t] = (topikCounts[t] || 0) + 1;
+                    });
+                }
+            });
+
+            const sortedTopik = Object.entries(topikCounts).sort((a, b) => b[1] - a[1]);
+            const labelsTopik = sortedTopik.map(i => i[0]);
+            const dataTopik = sortedTopik.map(i => i[1]);
+            const bgTopik = sortedTopik.map(i => TOPIK_CATEGORIES[i[0]]?.color || '#64748b');
+
+            const ctxTopik = document.getElementById('chartTopik').getContext('2d');
+            chartInstances.topik = new Chart(ctxTopik, {
+                type: 'bar',
+                data: {
+                    labels: labelsTopik,
+                    datasets: [{
+                        label: 'Jumlah Pemilih',
+                        data: dataTopik,
+                        backgroundColor: bgTopik,
+                        borderRadius: 6,
+                        barThickness: 14
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(ctx) {
+                                    const topikName = ctx.label;
+                                    return 'Kategori: ' + (TOPIK_CATEGORIES[topikName]?.cat || 'Umum');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { precision: 0, font: { size: 10 } },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        y: {
+                            ticks: { font: { size: 10 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // 2. Chart Unit Kerja (Doughnut)
+            const unitCounts = {
+                "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara": 0,
+                "Direktorat Advokasi Kebijakan": 0,
+                "Direktorat Diseminasi dan Publikasi Kebijakan": 0,
+                "Kedeputian Bidang Peningkatan Kualitas Kebijakan Administrasi Negara": 0
+            };
+            allResponses.forEach(r => {
+                if (r.unit_organisasi) {
+                    unitCounts[r.unit_organisasi] = (unitCounts[r.unit_organisasi] || 0) + 1;
+                }
+            });
+
+            const labelsUnitShort = ["Dir. Strategi", "Dir. Advokasi", "Dir. Diseminasi", "Kedeputian"];
+            const dataUnit = [
+                unitCounts["Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara"] || 0,
+                unitCounts["Direktorat Advokasi Kebijakan"] || 0,
+                unitCounts["Direktorat Diseminasi dan Publikasi Kebijakan"] || 0,
+                unitCounts["Kedeputian Bidang Peningkatan Kualitas Kebijakan Administrasi Negara"] || 0
+            ];
+            const colorsUnit = ["#3b82f6", "#10b981", "#f59e0b", "#6366f1"];
+
+            const ctxUnit = document.getElementById('chartUnit').getContext('2d');
+            chartInstances.unit = new Chart(ctxUnit, {
+                type: 'doughnut',
+                data: {
+                    labels: labelsUnitShort,
+                    datasets: [{
+                        data: dataUnit,
+                        backgroundColor: colorsUnit,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                    },
+                    cutout: '68%'
+                }
+            });
+
+            // Unit Legend Breakdown HTML
+            const legendContainer = document.getElementById('unit-legend-breakdown');
+            legendContainer.innerHTML = labelsUnitShort.map((lbl, idx) => `
+                <div class="flex items-center justify-between">
+                    <span class="flex items-center gap-1.5 text-slate-600">
+                        <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${colorsUnit[idx]}"></span>
+                        <span>${lbl}</span>
+                    </span>
+                    <span class="font-bold text-slate-800">${dataUnit[idx]} Pegawai</span>
+                </div>
+            `).join('');
+
+            // 3. Chart Hari (Bar)
+            const hariOrder = ["Senin", "Selasa", "Rabu", "Kamis"];
+            const hariData = [0, 0, 0, 0];
+            allResponses.forEach(r => {
+                if (Array.isArray(r.preferensi_hari)) {
+                    r.preferensi_hari.forEach(h => {
+                        const idx = hariOrder.indexOf(h);
+                        if (idx !== -1) hariData[idx]++;
+                    });
+                }
+            });
+
+            const ctxHari = document.getElementById('chartHari').getContext('2d');
+            chartInstances.hari = new Chart(ctxHari, {
+                type: 'bar',
+                data: {
+                    labels: hariOrder,
+                    datasets: [{
+                        label: 'Pilihan Hari',
+                        data: hariData,
+                        backgroundColor: '#6366f1',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } } },
+                        x: { ticks: { font: { size: 11, weight: '600' } } }
+                    }
+                }
+            });
+
+            // 4. Chart Waktu (Doughnut)
+            let waktuPagi = 0, waktuSiang = 0;
+            allResponses.forEach(r => {
+                if (Array.isArray(r.preferensi_waktu)) {
+                    r.preferensi_waktu.forEach(w => {
+                        if (w.includes("Pagi")) waktuPagi++;
+                        if (w.includes("Siang")) waktuSiang++;
+                    });
+                }
+            });
+
+            const ctxWaktu = document.getElementById('chartWaktu').getContext('2d');
+            chartInstances.waktu = new Chart(ctxWaktu, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pagi (09.00-12.00)', 'Siang (13.30-16.30)'],
+                    datasets: [{
+                        data: [waktuPagi, waktuSiang],
+                        backgroundColor: ['#0ea5e9', '#8b5cf6'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+                }
+            });
+
+            // 5. Chart Metode (Pie)
+            let metOffline = 0, metOnline = 0, metLain = 0;
+            allResponses.forEach(r => {
+                if (Array.isArray(r.metode_pelatihan)) {
+                    r.metode_pelatihan.forEach(m => {
+                        if (m.includes("Offline")) metOffline++;
+                        else if (m.includes("Online")) metOnline++;
+                        else metLain++;
+                    });
+                }
+            });
+
+            const ctxMetode = document.getElementById('chartMetode').getContext('2d');
+            chartInstances.metode = new Chart(ctxMetode, {
+                type: 'pie',
+                data: {
+                    labels: ['Offline (Tatap Muka)', 'Online (Daring)', 'Lainnya'],
+                    datasets: [{
+                        data: [metOffline, metOnline, metLain],
+                        backgroundColor: ['#10b981', '#3b82f6', '#94a3b8'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+                }
+            });
+        }
+
+        // ========================================================
+        // 3. RENDER KNOWLEDGE SHARING TALENT POOL
+        // ========================================================
+        function renderKnowledgeSharing() {
+            const sharingList = allResponses.filter(r => r.bersedia_berbagi === 'ya' && r.bidang_keahlian);
+            document.getElementById('badge-total-sharing-list').innerText = sharingList.length + ' Pegawai';
+
+            const container = document.getElementById('grid-knowledge-sharing');
+            if (sharingList.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 col-span-full py-4 text-center">Belum ada data narasumber internal yang tercatat.</p>`;
+                return;
+            }
+
+            container.innerHTML = sharingList.map(s => `
+                <div class="border border-emerald-100 bg-emerald-50/20 rounded-xl p-4 flex flex-col justify-between hover:shadow-sm transition">
+                    <div>
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-900">${s.nama}</h3>
+                                <p class="text-[11px] text-slate-500 mt-0.5">${s.jabatan || '-'}</p>
+                            </div>
+                            <span class="inline-block px-2 py-0.5 text-[9px] font-bold bg-emerald-100 text-emerald-800 rounded">Narasumber</span>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-emerald-100/60">
+                            <span class="text-[10px] font-bold uppercase text-emerald-800 block mb-1">Bidang Keahlian / Pengalaman:</span>
+                            <p class="text-xs text-slate-700 italic bg-white p-2.5 rounded-lg border border-emerald-100">"${s.bidang_keahlian}"</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-2 text-[10px] text-slate-400 flex justify-between">
+                        <span>NIP: ${s.nip}</span>
+                        <span>Masa Kerja: ${s.masa_kerja} thn</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========================================================
+        // 4. RENDER TABEL RESPONDEN LENGKAP
+        // ========================================================
+        function renderTable() {
+            const filterUnit = document.getElementById('filter-unit').value.toLowerCase();
+            const filterSharing = document.getElementById('filter-sharing').value;
+            const search = document.getElementById('search-pegawai').value.toLowerCase();
+
+            const filtered = allResponses.filter(r => {
+                const matchUnit = !filterUnit || (r.unit_organisasi && r.unit_organisasi.toLowerCase().includes(filterUnit));
+                const matchSharing = !filterSharing || (r.bersedia_berbagi === filterSharing);
+                const matchSearch = !search || 
+                    (r.nama && r.nama.toLowerCase().includes(search)) || 
+                    (r.nip && r.nip.includes(search));
+                return matchUnit && matchSharing && matchSearch;
+            });
+
+            document.getElementById('table-filtered-count').innerText = filtered.length;
+            document.getElementById('table-total-count').innerText = allResponses.length;
+
+            const tbody = document.getElementById('table-body-responden');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-xs text-slate-400">Tidak ada data responden yang sesuai filter.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((r, i) => {
+                const topicsCount = Array.isArray(r.topik_pelatihan) ? r.topik_pelatihan.length : 0;
+                const hariShort = Array.isArray(r.preferensi_hari) ? r.preferensi_hari.join(', ') : '-';
+                const waktuShort = Array.isArray(r.preferensi_waktu) ? r.preferensi_waktu.map(w => w.includes("Pagi") ? "Pagi" : "Siang").join(', ') : '-';
+                
+                return `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3 px-4 text-center font-medium text-slate-400">${i + 1}</td>
+                        <td class="py-3 px-4">
+                            <span class="font-bold text-slate-900 block">${r.nama}</span>
+                            <span class="text-[11px] text-slate-400 font-mono">NIP. ${r.nip}</span>
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="text-slate-800 font-medium block">${r.jabatan || '-'}</span>
+                            <span class="text-[11px] text-slate-400 block line-clamp-1" title="${r.unit_organisasi}">${r.unit_organisasi || '-'}</span>
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                                ${topicsCount} Topik
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-[11px]">
+                            <span class="block font-semibold text-slate-700">${hariShort}</span>
+                            <span class="text-slate-400">${waktuShort}</span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            ${r.bersedia_berbagi === 'ya' 
+                                ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Ya</span>' 
+                                : '<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-500">Tidak</span>'}
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="showDetailModal(${r.id || i})" class="px-2.5 py-1 text-[11px] font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition">
+                                Rincian
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ========================================================
+        // 5. MODAL DETAIL RESPONDEN
+        // ========================================================
+        function showDetailModal(idOrIndex) {
+            const data = allResponses.find(r => r.id === idOrIndex) || allResponses[idOrIndex];
+            if (!data) return;
+
+            const modalContent = document.getElementById('modal-content');
+            const topikList = Array.isArray(data.topik_pelatihan) 
+                ? data.topik_pelatihan.map(t => `<li class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>${t}</li>`).join('') 
+                : '<li>-</li>';
+
+            const hariList = Array.isArray(data.preferensi_hari) ? data.preferensi_hari.join(', ') : '-';
+            const waktuList = Array.isArray(data.preferensi_waktu) ? data.preferensi_waktu.join(', ') : '-';
+            const metodeList = Array.isArray(data.metode_pelatihan) ? data.metode_pelatihan.join(', ') : '-';
+
+            modalContent.innerHTML = `
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                    <h4 class="font-bold text-sm text-slate-900">${data.nama}</h4>
+                    <p class="text-slate-500 font-mono mt-0.5">NIP. ${data.nip}</p>
+                    <div class="grid grid-cols-2 gap-2 mt-3 text-slate-600 text-[11px]">
+                        <div><strong class="text-slate-700">Pangkat/Gol:</strong> ${data.pangkat_golongan || '-'}</div>
+                        <div><strong class="text-slate-700">Jabatan:</strong> ${data.jabatan || '-'}</div>
+                        <div><strong class="text-slate-700">Jenjang:</strong> ${data.jenjang_jabatan || '-'}</div>
+                        <div><strong class="text-slate-700">Masa Kerja:</strong> ${data.masa_kerja || '-'} Tahun</div>
+                    </div>
+                    <div class="mt-2 text-[11px]">
+                        <strong class="text-slate-700">Unit Organisasi:</strong>
+                        <p class="text-slate-600">${data.unit_organisasi || '-'}</p>
+                    </div>
+                </div>
+
+                <div class="border border-slate-200 rounded-xl p-4">
+                    <h5 class="font-bold text-slate-800 text-xs mb-2">Topik Kebutuhan Pelatihan (${Array.isArray(data.topik_pelatihan) ? data.topik_pelatihan.length : 0}):</h5>
+                    <ul class="space-y-1.5 text-slate-700 text-xs">
+                        ${topikList}
+                    </ul>
+                    ${data.topik_lainnya && data.topik_lainnya.length > 0 ? `
+                        <div class="mt-3 pt-3 border-t border-slate-100">
+                            <span class="font-bold text-slate-700">Usulan Topik Lainnya:</span>
+                            <p class="text-slate-600 italic mt-0.5">${data.topik_lainnya.join(', ')}</p>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div class="border border-slate-200 rounded-xl p-3">
+                        <span class="font-bold text-slate-700 block mb-1">Preferensi Waktu Pelaksanaan:</span>
+                        <p class="text-slate-600"><strong>Hari:</strong> ${hariList}</p>
+                        <p class="text-slate-600 mt-1"><strong>Sesi:</strong> ${waktuList}</p>
+                        <p class="text-slate-600 mt-1"><strong>Metode:</strong> ${metodeList}</p>
+                    </div>
+                    <div class="border border-slate-200 rounded-xl p-3 ${data.bersedia_berbagi === 'ya' ? 'bg-emerald-50/40 border-emerald-200' : ''}">
+                        <span class="font-bold text-slate-700 block mb-1">Kesediaan Berbagi Pengetahuan:</span>
+                        <p class="${data.bersedia_berbagi === 'ya' ? 'font-bold text-emerald-700' : 'text-slate-600'}">
+                            ${data.bersedia_berbagi === 'ya' ? '✓ Ya, Bersedia Jadi Narasumber' : 'Belum Bersedia'}
+                        </p>
+                        ${data.bersedia_berbagi === 'ya' && data.bidang_keahlian ? `
+                            <p class="text-slate-600 mt-1.5 italic">"${data.bidang_keahlian}"</p>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modal-detail').classList.remove('hidden');
+        }
+
+        function closeModalDetail() {
+            document.getElementById('modal-detail').classList.add('hidden');
+        }
+
+        // ========================================================
+        // 6. EXPORT KE CSV / EXCEL
+        // ========================================================
+        function exportToCSV() {
+            if (allResponses.length === 0) {
+                alert("Tidak ada data untuk diexport.");
+                return;
+            }
+
+            const headers = [
+                "ID", "Waktu Kirim", "Nama Pegawai", "NIP", "Pangkat Golongan", 
+                "Jabatan", "Jenjang Jabatan", "Masa Kerja", "Unit Organisasi", 
+                "Topik Pelatihan", "Topik Lainnya", "Preferensi Hari", 
+                "Preferensi Waktu", "Metode Pelatihan", "Bersedia Berbagi", "Bidang Keahlian"
+            ];
+
+            const rows = allResponses.map(r => [
+                r.id || "",
+                r.created_at || "",
+                `"${(r.nama || "").replace(/"/g, '""')}"`,
+                `"${(r.nip || "").replace(/"/g, '""')}"`,
+                `"${(r.pangkat_golongan || "").replace(/"/g, '""')}"`,
+                `"${(r.jabatan || "").replace(/"/g, '""')}"`,
+                `"${(r.jenjang_jabatan || "").replace(/"/g, '""')}"`,
+                r.masa_kerja || "",
+                `"${(r.unit_organisasi || "").replace(/"/g, '""')}"`,
+                `"${Array.isArray(r.topik_pelatihan) ? r.topik_pelatihan.join("; ") : ""}"`,
+                `"${Array.isArray(r.topik_lainnya) ? r.topik_lainnya.join("; ") : ""}"`,
+                `"${Array.isArray(r.preferensi_hari) ? r.preferensi_hari.join("; ") : ""}"`,
+                `"${Array.isArray(r.preferensi_waktu) ? r.preferensi_waktu.join("; ") : ""}"`,
+                `"${Array.isArray(r.metode_pelatihan) ? r.metode_pelatihan.join("; ") : ""}"`,
+                r.bersedia_berbagi || "",
+                `"${(r.bidang_keahlian || "").replace(/"/g, '""')}"`
+            ]);
+
+            const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Rekap_Survei_Bangkom_Deputi1_LAN_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAllData();
+        });
+    </script>
+</body>
+</html>
