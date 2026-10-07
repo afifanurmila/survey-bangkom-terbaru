@@ -49,16 +49,10 @@
             <!-- Header Actions -->
             <div class="flex items-center flex-wrap gap-2.5">
                 <!-- Status Badge -->
-                <div id="badge-status-source" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span id="text-status-source">Mode Simulasi (Demo Data)</span>
+                <div id="badge-status-source" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span id="text-status-source">Menunggu Data Responden</span>
                 </div>
-
-                <!-- Toggle Demo / Live -->
-                <button onclick="toggleDataSource()" id="btn-toggle-source" class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition flex items-center gap-1.5 shadow-sm">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                    <span>Ganti ke Live Supabase</span>
-                </button>
 
                 <!-- Tombol Refresh -->
                 <button onclick="loadAllData()" class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition shadow-sm" title="Refresh Data">
@@ -367,285 +361,8 @@
         }
 
         // State Dashboard
-        let isUsingDemoData = true; // Default ke data simulasi jika belum connect Supabase
         let allResponses = [];
         let chartInstances = {};
-
-        // ========================================================
-        // 25 DATA SIMULASI (DEMO) REALISTIS BERDASARKAN PEGAWAI LAN
-        // ========================================================
-        const DEMO_RESPONSES = [
-            {
-                id: 1,
-                created_at: "2026-10-06T08:30:00Z",
-                nama: "Dr. Agus Sudrajat, S.Sos., M.A.",
-                nip: "196708041990031001",
-                unit_organisasi: "Kedeputian Bidang Peningkatan Kualitas Kebijakan Administrasi Negara",
-                pangkat_golongan: "Pembina Utama - IV/e",
-                jabatan: "Deputi Bidang Peningkatan Kualitas Kebijakan Administrasi Negara",
-                jenjang_jabatan: "Pimpinan Tinggi Madya",
-                masa_kerja: 36,
-                topik_pelatihan: ["Adaptive Governance", "Reformasi Birokrasi", "Policy Impact Assessment", "Advokasi & Komunikasi Kebijakan"],
-                topik_lainnya: null,
-                preferensi_hari: ["Selasa", "Kamis"],
-                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "ya",
-                bidang_keahlian: "Strategic Leadership & Tata Kelola Reformasi Kebijakan Publik Nasional"
-            },
-            {
-                id: 2,
-                created_at: "2026-10-06T09:15:00Z",
-                nama: "Widhi Novianto, S.Sos., M.Si.",
-                nip: "197211181997021002",
-                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
-                pangkat_golongan: "Pembina Utama Madya - IV/d",
-                jabatan: "Direktur Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
-                jenjang_jabatan: "Pimpinan Tinggi Pratama",
-                masa_kerja: 29,
-                topik_pelatihan: ["Regulatory Impact Assessment (RIA)", "Analisis Formulasi Kebijakan", "Policy Impact Assessment"],
-                topik_lainnya: null,
-                preferensi_hari: ["Rabu"],
-                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "ya",
-                bidang_keahlian: "Analisis Kelayakan & Desain Regulasi Berbasis Bukti (Evidence-Based)"
-            },
-            {
-                id: 3,
-                created_at: "2026-10-06T10:00:00Z",
-                nama: "Drs. Haris Faozan, M.Si.",
-                nip: "196909061994031001",
-                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
-                pangkat_golongan: "Pembina Utama - IV/e",
-                jabatan: "Analis Kebijakan Ahli Utama",
-                jenjang_jabatan: "Fungsional Ahli Utama",
-                masa_kerja: 32,
-                topik_pelatihan: ["Monitoring & Evaluasi Kebijakan", "Policy Impact Assessment", "Adaptive Governance"],
-                topik_lainnya: null,
-                preferensi_hari: ["Selasa", "Rabu"],
-                preferensi_waktu: ["Siang (13.30 - 16.30 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)", "Online (Daring / Webinar)"],
-                bersedia_berbagi: "ya",
-                bidang_keahlian: "Metodologi Evaluasi Kinerja Kebijakan & Teori Perubahan Publik"
-            },
-            {
-                id: 4,
-                created_at: "2026-10-06T11:20:00Z",
-                nama: "Budiarjo, S.Sos., M.A.",
-                nip: "197201051998021001",
-                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
-                pangkat_golongan: "Pembina Utama Muda - IV/c",
-                jabatan: "Analis Kebijakan Ahli Madya",
-                jenjang_jabatan: "Fungsional Ahli Madya",
-                masa_kerja: 28,
-                topik_pelatihan: ["Policy Impact Assessment", "Public Consultation", "Co-Creation & Collaborative Innovation"],
-                topik_lainnya: null,
-                preferensi_hari: ["Senin", "Rabu"],
-                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
-                metode_pelatihan: ["Online (Daring / Webinar)"],
-                bersedia_berbagi: "tidak",
-                bidang_keahlian: null
-            },
-            {
-                id: 5,
-                created_at: "2026-10-06T13:10:00Z",
-                nama: "Dewi Oktaviani, S.IP., M.H.",
-                nip: "198010142005012001",
-                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
-                pangkat_golongan: "Pembina - IV/a",
-                jabatan: "Analis Kebijakan Ahli Madya",
-                jenjang_jabatan: "Fungsional Ahli Madya",
-                masa_kerja: 21,
-                topik_pelatihan: ["Legal Drafting", "Regulatory Impact Assessment (RIA)", "Advokasi & Komunikasi Kebijakan"],
-                topik_lainnya: null,
-                preferensi_hari: ["Selasa"],
-                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "ya",
-                bidang_keahlian: "Harmonisasi Peraturan Perundang-undangan & Teknik Legal Drafting"
-            },
-            {
-                id: 6,
-                created_at: "2026-10-06T14:40:00Z",
-                nama: "Sri Haryati, SH",
-                nip: "196903272002122001",
-                unit_organisasi: "Direktorat Advokasi Kebijakan",
-                pangkat_golongan: "Pembina - IV/a",
-                jabatan: "Direktur Advokasi Kebijakan",
-                jenjang_jabatan: "Pimpinan Tinggi Pratama",
-                masa_kerja: 24,
-                topik_pelatihan: ["Advokasi & Komunikasi Kebijakan", "Stakeholder Engagement (Kebijakan)", "Inovasi Kebijakan & Program"],
-                topik_lainnya: null,
-                preferensi_hari: ["Kamis"],
-                preferensi_waktu: ["Siang (13.30 - 16.30 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "ya",
-                bidang_keahlian: "Teknik Policy Pitching dan Negosiasi Lintas Instansi Pemerintah"
-            },
-            {
-                id: 7,
-                created_at: "2026-10-06T15:05:00Z",
-                nama: "Hari Nugroho, S.IP",
-                nip: "197805212006041003",
-                unit_organisasi: "Direktorat Advokasi Kebijakan",
-                pangkat_golongan: "Penata Tingkat I - III/d",
-                jabatan: "Analis Kebijakan Ahli Muda",
-                jenjang_jabatan: "Fungsional Ahli Muda",
-                masa_kerja: 20,
-                topik_pelatihan: ["Stakeholder Engagement (Kebijakan)", "Public Consultation", "Advokasi & Komunikasi Kebijakan"],
-                topik_lainnya: null,
-                preferensi_hari: ["Senin", "Selasa"],
-                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "ya",
-                bidang_keahlian: "Fasilitasi Forum Konsultasi Publik dan Pemetaan Kekuatan Aktor Kebijakan"
-            },
-            {
-                id: 8,
-                created_at: "2026-10-07T08:10:00Z",
-                nama: "Rahmat Hidayat, S.Kom., M.TI",
-                nip: "198801152014021002",
-                unit_organisasi: "Direktorat Diseminasi dan Publikasi Kebijakan",
-                pangkat_golongan: "Penata - III/c",
-                jabatan: "Pranata Komputer Ahli Muda",
-                jenjang_jabatan: "Fungsional Ahli Muda",
-                masa_kerja: 12,
-                topik_pelatihan: ["Big Data Analytics untuk Kebijakan", "Data Science & Visualisasi Data", "Public Sector Innovation"],
-                topik_lainnya: ["Pemanfaatan AI untuk Analisis Sentimen Kebijakan Publik"],
-                preferensi_hari: ["Rabu", "Kamis"],
-                preferensi_waktu: ["Siang (13.30 - 16.30 WIB)"],
-                metode_pelatihan: ["Online (Daring / Webinar)"],
-                bersedia_berbagi: "ya",
-                bidang_keahlian: "Visualisasi Data Kebijakan menggunakan Dashboard Interaktif & Python"
-            },
-            {
-                id: 9,
-                created_at: "2026-10-07T08:45:00Z",
-                nama: "Anisa Fitriani, S.Sos",
-                nip: "199404122019022004",
-                unit_organisasi: "Direktorat Diseminasi dan Publikasi Kebijakan",
-                pangkat_golongan: "Penata Muda Tingkat I - III/b",
-                jabatan: "Analis Kebijakan Ahli Pertama",
-                jenjang_jabatan: "Fungsional Ahli Pertama",
-                masa_kerja: 7,
-                topik_pelatihan: ["Penyusunan Policy Brief & Policy Paper", "Advokasi & Komunikasi Kebijakan", "Design Thinking"],
-                topik_lainnya: null,
-                preferensi_hari: ["Selasa"],
-                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "tidak",
-                bidang_keahlian: null
-            },
-            {
-                id: 10,
-                created_at: "2026-10-07T09:00:00Z",
-                nama: "Evy Trisulo Dianasari, SH., MH.",
-                nip: "197303182001122001",
-                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
-                pangkat_golongan: "Pembina - IV/a",
-                jabatan: "Penelaah Teknis Kebijakan",
-                jenjang_jabatan: "Pelaksana",
-                masa_kerja: 25,
-                topik_pelatihan: ["Legal Drafting", "Regulatory Impact Assessment (RIA)", "Analisis Formulasi Kebijakan"],
-                topik_lainnya: null,
-                preferensi_hari: ["Kamis"],
-                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "ya",
-                bidang_keahlian: "Teknik Penelaahan Aspek Yuridis dan Konsistensi Regulasi Pusat-Daerah"
-            },
-            {
-                id: 11,
-                created_at: "2026-10-07T09:12:00Z",
-                nama: "Amira Amnihati Rumhana, S.E.",
-                nip: "199809262021012001",
-                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
-                pangkat_golongan: "Penata Muda - III/a",
-                jabatan: "Pengolah Data dan Informasi",
-                jenjang_jabatan: "Pelaksana",
-                masa_kerja: 5,
-                topik_pelatihan: ["Data Science & Visualisasi Data", "Big Data Analytics untuk Kebijakan", "Monitoring & Evaluasi Kebijakan"],
-                topik_lainnya: null,
-                preferensi_hari: ["Rabu"],
-                preferensi_waktu: ["Siang (13.30 - 16.30 WIB)"],
-                metode_pelatihan: ["Online (Daring / Webinar)"],
-                bersedia_berbagi: "tidak",
-                bidang_keahlian: null
-            },
-            {
-                id: 12,
-                created_at: "2026-10-07T09:25:00Z",
-                nama: "Lina Mettasari, SE",
-                nip: "197605112007012004",
-                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
-                pangkat_golongan: "Penata Tingkat I - III/d",
-                jabatan: "Pengolah Data dan Informasi",
-                jenjang_jabatan: "Pelaksana",
-                masa_kerja: 19,
-                topik_pelatihan: ["Monitoring & Evaluasi Kebijakan", "Policy Impact Assessment", "Design Thinking"],
-                topik_lainnya: null,
-                preferensi_hari: ["Selasa", "Kamis"],
-                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "tidak",
-                bidang_keahlian: null
-            },
-            {
-                id: 13,
-                created_at: "2026-10-07T09:30:00Z",
-                nama: "Bambang Suprayogo, S.IP., M.PA",
-                nip: "198308192008121003",
-                unit_organisasi: "Direktorat Advokasi Kebijakan",
-                pangkat_golongan: "Pembina - IV/a",
-                jabatan: "Analis Kebijakan Ahli Madya",
-                jenjang_jabatan: "Fungsional Ahli Madya",
-                masa_kerja: 18,
-                topik_pelatihan: ["Advokasi & Komunikasi Kebijakan", "Adaptive Governance", "Inovasi Kebijakan & Program"],
-                topik_lainnya: null,
-                preferensi_hari: ["Senin", "Rabu"],
-                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "ya",
-                bidang_keahlian: "Praktik Advokasi Isu Strategis Kebijakan di Tingkat Kementerian/Lembaga"
-            },
-            {
-                id: 14,
-                created_at: "2026-10-07T09:40:00Z",
-                nama: "Nurul Aini, S.Sos",
-                nip: "199202042018012002",
-                unit_organisasi: "Direktorat Diseminasi dan Publikasi Kebijakan",
-                pangkat_golongan: "Penata Muda Tingkat I - III/b",
-                jabatan: "Pranata Humas Ahli Pertama",
-                jenjang_jabatan: "Fungsional Ahli Pertama",
-                masa_kerja: 8,
-                topik_pelatihan: ["Advokasi & Komunikasi Kebijakan", "Penyusunan Policy Brief & Policy Paper", "Design Thinking"],
-                topik_lainnya: null,
-                preferensi_hari: ["Kamis"],
-                preferensi_waktu: ["Pagi (09.00 - 12.00 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "ya",
-                bidang_keahlian: "Penulisan Siaran Pers Kebijakan & Pengelolaan Media Komunikasi Publik"
-            },
-            {
-                id: 15,
-                created_at: "2026-10-07T09:45:00Z",
-                nama: "Suhanda",
-                nip: "196901022006041002",
-                unit_organisasi: "Direktorat Strategi Peningkatan Kualitas Kebijakan Administrasi Negara",
-                pangkat_golongan: "Pengatur Muda Tingkat I - II/b",
-                jabatan: "Pengadministrasi Perkantoran",
-                jenjang_jabatan: "Pelaksana",
-                masa_kerja: 20,
-                topik_pelatihan: ["Manajemen Perubahan (Change Management)", "Reformasi Birokrasi"],
-                topik_lainnya: null,
-                preferensi_hari: ["Selasa"],
-                preferensi_waktu: ["Siang (13.30 - 16.30 WIB)"],
-                metode_pelatihan: ["Offline (Tatap Muka di Kelas)"],
-                bersedia_berbagi: "tidak",
-                bidang_keahlian: null
-            }
-        ];
 
         // Definisi Kategori Subkompetensi untuk Warna Chart
         const TOPIK_CATEGORIES = {
@@ -674,9 +391,10 @@
         // LOAD DATA & CONTROLLER
         // ========================================================
         async function loadAllData() {
-            if (isUsingDemoData || !supabaseClient) {
-                allResponses = [...DEMO_RESPONSES];
-                updateBadgeStatus(false);
+            if (!supabaseClient) {
+                // Supabase belum terkonfigurasi
+                allResponses = [];
+                updateBadgeStatus(false, "Konfigurasi Supabase Belum Diisi");
             } else {
                 try {
                     const { data, error } = await supabaseClient
@@ -686,23 +404,16 @@
 
                     if (error) {
                         console.warn("Gagal load dari Supabase:", error);
-                        alert("Tidak dapat mengambil data dari Supabase: " + error.message + "\nBeralih kembali ke Mode Simulasi.");
-                        isUsingDemoData = true;
-                        allResponses = [...DEMO_RESPONSES];
-                        updateBadgeStatus(false);
-                    } else if (!data || data.length === 0) {
-                        alert("Tabel Supabase masih kosong. Menampilkan data simulasi sebagai contoh visualisasi.");
-                        isUsingDemoData = true;
-                        allResponses = [...DEMO_RESPONSES];
-                        updateBadgeStatus(false);
+                        allResponses = [];
+                        updateBadgeStatus(false, "Gagal koneksi: " + error.message);
                     } else {
-                        allResponses = data;
+                        allResponses = data || [];
                         updateBadgeStatus(true);
                     }
                 } catch (err) {
                     console.error("Fetch error:", err);
-                    allResponses = [...DEMO_RESPONSES];
-                    updateBadgeStatus(false);
+                    allResponses = [];
+                    updateBadgeStatus(false, "Terjadi gangguan jaringan");
                 }
             }
 
@@ -712,29 +423,17 @@
             renderTable();
         }
 
-        function updateBadgeStatus(isLive) {
+        function updateBadgeStatus(isLive, customMsg) {
             const badge = document.getElementById('badge-status-source');
             const text = document.getElementById('text-status-source');
-            const btn = document.getElementById('btn-toggle-source');
 
             if (isLive) {
                 badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200";
-                text.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-1 inline-block"></span>Live Supabase (' + allResponses.length + ' Data)';
-                btn.innerHTML = '<span>Ganti ke Mode Demo</span>';
+                text.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mr-1 inline-block"></span>Live Supabase (' + allResponses.length + ' Responden)';
             } else {
-                badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200";
-                text.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse mr-1 inline-block"></span>Mode Simulasi (' + allResponses.length + ' Data Demo)';
-                btn.innerHTML = '<span>Ganti ke Live Supabase</span>';
+                badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200";
+                text.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400 mr-1 inline-block"></span>' + (customMsg || 'Database Belum Terhubung (0 Data)');
             }
-        }
-
-        function toggleDataSource() {
-            if (!supabaseClient && isUsingDemoData) {
-                alert("URL dan Anon Key Supabase belum diisi pada file dashboard.html.\nSilakan masukkan kredensial Supabase Anda di script dashboard.html untuk mengaktifkan koneksi database langsung.");
-                return;
-            }
-            isUsingDemoData = !isUsingDemoData;
-            loadAllData();
         }
 
         // ========================================================
@@ -827,6 +526,12 @@
             const labelsTopik = sortedTopik.map(i => i[0]);
             const dataTopik = sortedTopik.map(i => i[1]);
             const bgTopik = sortedTopik.map(i => TOPIK_CATEGORIES[i[0]]?.color || '#64748b');
+
+            if (labelsTopik.length === 0) {
+                labelsTopik.push("Belum ada respon masuk");
+                dataTopik.push(0);
+                bgTopik.push("#cbd5e1");
+            }
 
             const ctxTopik = document.getElementById('chartTopik').getContext('2d');
             chartInstances.topik = new Chart(ctxTopik, {
