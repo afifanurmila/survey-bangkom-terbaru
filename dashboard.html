@@ -352,8 +352,8 @@
         // ========================================================
         // KONFIGURASI SUPABASE (Sama dengan index.html)
         // ========================================================
-        const SUPABASE_URL = "";       // Masukkan Supabase Project URL di sini jika sudah ada
-        const SUPABASE_ANON_KEY = "";  // Masukkan Supabase Anon Key di sini jika sudah ada
+        const SUPABASE_URL = "https://gowleizcsphuydbuhfoy.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_iYfTy-1HABdhlGGMhB8AqA_4lO3Harp";
         let supabaseClient = null;
 
         if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
@@ -398,7 +398,7 @@
             } else {
                 try {
                     const { data, error } = await supabaseClient
-                        .from('survey_responses')
+                        .from('survey_bangkom_2026')
                         .select('*')
                         .order('created_at', { ascending: false });
 

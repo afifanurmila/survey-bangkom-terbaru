@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survei Kebutuhan Pengembangan Kompetensi - Deputi I LAN RI</title>
+    <!-- Favicon LAN RI -->
+    <link rel="icon" type="image/png" href="favicon.png">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client CDN -->
@@ -35,8 +37,8 @@
     <header class="bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-800 text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center font-extrabold text-blue-200 text-lg border border-white/20 shadow-sm">
-                    LAN
+                <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-md">
+                    <img src="favicon.png" alt="Logo LAN RI" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <div class="text-xs uppercase tracking-wider font-semibold text-blue-200">Lembaga Administrasi Negara RI</div>
@@ -556,8 +558,8 @@
         // ========================================================
         // KONFIGURASI SUPABASE (Bisa diisi jika sudah siap)
         // ========================================================
-        const SUPABASE_URL = "";       // Contoh: 'https://xyzcompany.supabase.co'
-        const SUPABASE_ANON_KEY = "";  // Masukkan Supabase Anon Public Key di sini
+        const SUPABASE_URL = "https://gowleizcsphuydbuhfoy.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_iYfTy-1HABdhlGGMhB8AqA_4lO3Harp";
         let supabaseClient = null;
 
         if (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase) {
@@ -879,7 +881,7 @@
 
                 try {
                     const { data, error } = await supabaseClient
-                        .from('survey_responses')
+                        .from('survey_bangkom_2026')
                         .insert([formData]);
 
                     if (error) {
