@@ -6,6 +6,7 @@
     <title>Editor Kuesioner Bangkom - Admin Panel</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -43,6 +44,8 @@
                 </div>
             </div>
             <div class="flex items-center gap-2.5">
+                <form id="admin-login" class="flex items-center gap-2" onsubmit="signInAdmin(event)"><input id="admin-email" type="email" autocomplete="username" required placeholder="Email admin" class="w-36 px-2 py-1.5 text-xs border border-slate-300 rounded-lg"><input id="admin-password" type="password" autocomplete="current-password" required placeholder="Kata sandi" class="w-28 px-2 py-1.5 text-xs border border-slate-300 rounded-lg"><button class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800 text-white">Masuk</button></form>
+                <span id="admin-session" class="hidden text-xs font-medium text-emerald-700"></span><button id="admin-logout" class="hidden text-xs text-slate-600 underline" onclick="signOutAdmin()">Keluar</button>
                 <button onclick="exportConfig()" class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 shadow-sm transition">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     Export JSON
@@ -51,7 +54,7 @@
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                     Preview
                 </button>
-                <button onclick="applyChanges()" class="text-xs font-bold px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 shadow-sm shadow-emerald-600/20 transition">
+                <button id="save-config-button" onclick="applyChanges()" disabled class="text-xs font-bold opacity-50 cursor-not-allowed px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 shadow-sm shadow-emerald-600/20 transition">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     Simpan & Terapkan
                 </button>
@@ -66,7 +69,7 @@
             <svg class="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <div class="text-xs text-blue-800">
                 <span class="font-bold block mb-0.5">Cara menggunakan Editor Kuesioner:</span>
-                Edit nama subkompetensi, deskripsi topik, atau tambah/hapus opsi topik pelatihan. Klik <strong>"Simpan & Terapkan"</strong> untuk mengunduh file <code class="bg-blue-100 px-1 rounded">index.html</code> yang sudah diperbarui dan menggantikan file di folder proyek Anda. Tombol ↕ di sebelah kiri untuk mengurutkan ulang topik.
+                Masuk dengan akun admin yang sudah diaktifkan. Perubahan yang disimpan langsung dipakai halaman survei. Pastikan konfigurasi sesuai sebelum menyimpan.
             </div>
         </div>
 
@@ -125,55 +128,104 @@
         // DATA KUESIONER (Edit di sini atau via UI)
         // ============================================================
         let surveyData = {
-            sections: [
-                {
-                    id: 1,
-                    title: "Analisis Kebijakan",
-                    color: 1,
-                    topics: [
-                        { value: "Analisis Formulasi Kebijakan", desc: "Teori kebijakan publik; agenda-setting; formulasi alternatif kebijakan; peran pemangku kepentingan." },
-                        { value: "Penyusunan Policy Brief & Policy Paper", desc: "Teknik penulisan kebijakan; struktur policy brief; sitasi; rekomendasi berbasis data." },
-                        { value: "Policy Impact Assessment", desc: "Penilaian dampak ekonomi; sosial; kelembagaan; serta indikator dampak kebijakan." },
-                        { value: "Monitoring & Evaluasi Kebijakan", desc: "Desain monitoring; indikator kinerja kebijakan; evaluasi efektivitas dan efisiensi." },
-                        { value: "Big Data Analytics untuk Kebijakan", desc: "Pengolahan data besar; analisis sentimen kebijakan; visualisasi tren kebijakan publik." },
-                        { value: "Data Science & Visualisasi Data", desc: "Python/R dasar untuk data; dashboard kebijakan; storytelling data untuk pengambilan keputusan." }
+                    "sections": [
+                                {
+                                            "id": 1,
+                                            "title": "Analisis Kebijakan",
+                                            "color": 1,
+                                            "topics": [
+                                                        {
+                                                                    "value": "Riset & Analisis Kebijakan",
+                                                                    "desc": "Identifikasi masalah; perumusan pertanyaan; pengolahan data; penyusunan policy brief/paper."
+                                                        },
+                                                        {
+                                                                    "value": "Perumusan Kebijakan Publik",
+                                                                    "desc": "Penyusunan alternatif kebijakan; cost-benefit analisis; rekomendasi naskah kebijakan."
+                                                        },
+                                                        {
+                                                                    "value": "Policy Impact Assessment",
+                                                                    "desc": "Penilaian dampak ekonomi; sosial; kelembagaan; serta indikator dampak kebijakan."
+                                                        },
+                                                        {
+                                                                    "value": "Monitoring & Evaluasi Kebijakan",
+                                                                    "desc": "Desain monitoring; indikator kinerja kebijakan; evaluasi efektivitas dan efisiensi."
+                                                        }
+                                            ]
+                                },
+                                {
+                                            "id": 2,
+                                            "title": "Advokasi Kebijakan",
+                                            "color": 2,
+                                            "topics": [
+                                                        {
+                                                                    "value": "Advokasi & Komunikasi Kebijakan",
+                                                                    "desc": "Strategi advokasi; pemetaan aktor; penyusunan pesan; policy pitching."
+                                                        },
+                                                        {
+                                                                    "value": "Stakeholder Engagement (Kebijakan)",
+                                                                    "desc": "Analisis kepentingan/pengaruh stakeholder; teknik kolaborasi; pengelolaan konflik."
+                                                        },
+                                                        {
+                                                                    "value": "Public Consultation",
+                                                                    "desc": "Desain instrumen konsultasi publik; fasilitasi forum; integrasi hasil konsultasi."
+                                                        },
+                                                        {
+                                                                    "value": "Regulatory Impact Assessment (RIA)",
+                                                                    "desc": "Identifikasi masalah regulasi; penyusunan opsi regulasi; analisis dampak alternatif regulasi."
+                                                        },
+                                                        {
+                                                                    "value": "Legal Drafting",
+                                                                    "desc": "Teknik penyusunan peraturan; perumusan norma hukum; harmonisasi & sinkronisasi regulasi."
+                                                        },
+                                                        {
+                                                                    "value": "Inovasi Kebijakan & Program",
+                                                                    "desc": "Design Thinking kebijakan; co-creation; perancangan & implementasi inovasi."
+                                                        }
+                                            ]
+                                },
+                                {
+                                            "id": 3,
+                                            "title": "Manajemen Stakeholders",
+                                            "color": 3,
+                                            "topics": [
+                                                        {
+                                                                    "value": "Stakeholder Engagement (Pelayanan Publik)",
+                                                                    "desc": "Membangun engagement; komunikasi stakeholder; kolaborasi & pengelolaan hubungan."
+                                                        },
+                                                        {
+                                                                    "value": "Co-Creation & Collaborative Innovation",
+                                                                    "desc": "Co-design solusi pelayanan publik; collaborative problem solving pemerintah & mitra."
+                                                        }
+                                            ]
+                                },
+                                {
+                                            "id": 4,
+                                            "title": "Manajemen Ekosistem Pelayanan Publik",
+                                            "color": 4,
+                                            "topics": [
+                                                        {
+                                                                    "value": "Adaptive Governance",
+                                                                    "desc": "Pengambilan keputusan adaptif; respons terhadap perubahan; ketidakpastian tata kelola."
+                                                        },
+                                                        {
+                                                                    "value": "Reformasi Birokrasi",
+                                                                    "desc": "Transformasi tata kelola; penyederhanaan birokrasi; perubahan budaya kerja."
+                                                        },
+                                                        {
+                                                                    "value": "Manajemen Perubahan (Change Management)",
+                                                                    "desc": "Analisis kesiapan organisasi; strategi komunikasi; pengelolaan resistensi perubahan."
+                                                        },
+                                                        {
+                                                                    "value": "Public Sector Innovation",
+                                                                    "desc": "Ideasi inovasi pelayanan publik; model implementasi; scaling-up inovasi sektor publik."
+                                                        },
+                                                        {
+                                                                    "value": "Design Thinking",
+                                                                    "desc": "Empathize; Define; Ideate; Prototype; dan Testing untuk perbaikan layanan publik."
+                                                        }
+                                            ]
+                                }
                     ]
-                },
-                {
-                    id: 2,
-                    title: "Advokasi Kebijakan",
-                    color: 2,
-                    topics: [
-                        { value: "Advokasi & Komunikasi Kebijakan", desc: "Strategi advokasi; pemetaan aktor; penyusunan pesan; policy pitching." },
-                        { value: "Stakeholder Engagement (Kebijakan)", desc: "Analisis kepentingan/pengaruh stakeholder; teknik kolaborasi; pengelolaan konflik." },
-                        { value: "Public Consultation", desc: "Desain instrumen konsultasi publik; fasilitasi forum; integrasi hasil konsultasi." },
-                        { value: "Regulatory Impact Assessment (RIA)", desc: "Identifikasi masalah regulasi; penyusunan opsi regulasi; analisis dampak alternatif regulasi." },
-                        { value: "Legal Drafting", desc: "Teknik penyusunan peraturan; perumusan norma hukum; harmonisasi & sinkronisasi regulasi." },
-                        { value: "Inovasi Kebijakan & Program", desc: "Design Thinking kebijakan; co-creation; perancangan & implementasi inovasi." }
-                    ]
-                },
-                {
-                    id: 3,
-                    title: "Manajemen Stakeholders",
-                    color: 3,
-                    topics: [
-                        { value: "Stakeholder Engagement (Pelayanan Publik)", desc: "Membangun engagement; komunikasi stakeholder; kolaborasi & pengelolaan hubungan." },
-                        { value: "Co-Creation & Collaborative Innovation", desc: "Co-design solusi pelayanan publik; collaborative problem solving pemerintah & mitra." }
-                    ]
-                },
-                {
-                    id: 4,
-                    title: "Manajemen Ekosistem Pelayanan Publik",
-                    color: 4,
-                    topics: [
-                        { value: "Adaptive Governance", desc: "Pengambilan keputusan adaptif; respons terhadap perubahan; ketidakpastian tata kelola." },
-                        { value: "Reformasi Birokrasi", desc: "Transformasi tata kelola; penyederhanaan birokrasi; perubahan budaya kerja." },
-                        { value: "Manajemen Perubahan (Change Management)", desc: "Analisis kesiapan organisasi; strategi komunikasi; pengelolaan resistensi perubahan." },
-                        { value: "Public Sector Innovation", desc: "Ideasi inovasi pelayanan publik; model implementasi; scaling-up inovasi sektor publik." },
-                        { value: "Design Thinking", desc: "Empathize; Define; Ideate; Prototype; dan Testing untuk perbaikan layanan publik." }
-                    ]
-                }
-            ]
         };
 
         const COLORS = {
@@ -381,92 +433,45 @@
             document.getElementById('preview-modal').classList.remove('hidden');
         }
 
-        // ============================================================
-        // SIMPAN & TERAPKAN (Generate index.html baru)
-        // ============================================================
-        function applyChanges() {
-            // Baca nilai terbaru dari input
-            surveyData.sections.forEach((s, sIdx) => {
-                const titleEl = document.getElementById(`sec-title-${sIdx}`);
-                if (titleEl) s.title = titleEl.value;
+        const SUPABASE_URL="https://gowleizcsphuydbuhfoy.supabase.co";
+        const SUPABASE_ANON_KEY="sb_publishable_iYfTy-1HABdhlGGMhB8AqA_4lO3Harp";
+        const adminSupabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+        let adminSession=null;
+        function setAdminSession(session){adminSession=session;document.getElementById('admin-login').classList.toggle('hidden',!!session);document.getElementById('admin-session').classList.toggle('hidden',!session);document.getElementById('admin-logout').classList.toggle('hidden',!session);const b=document.getElementById('save-config-button');b.disabled=!session;b.classList.toggle('opacity-50',!session);b.classList.toggle('cursor-not-allowed',!session);document.getElementById('admin-session').textContent=session?.user?.email||'';}
+        async function signInAdmin(event) {
+            event.preventDefault();
+            const { data, error } = await adminSupabase.auth.signInWithPassword({
+                email: document.getElementById('admin-email').value.trim(),
+                password: document.getElementById('admin-password').value
             });
-
-            // Build HTML untuk semua section subkompetensi
-            const sectionColors = ['blue', 'emerald', 'amber', 'purple'];
-            const sectionColorNums = { 1: 'blue', 2: 'emerald', 3: 'amber', 4: 'purple' };
-            const fromColors = { 1: 'from-blue-50', 2: 'from-emerald-50', 3: 'from-amber-50', 4: 'from-purple-50' };
-
-            const sectionsHTML = surveyData.sections.map((sec, sIdx) => {
-                const colorName = sectionColorNums[sec.color] || 'blue';
-                const fromColor = fromColors[sec.color] || fromColors[1];
-                const checkColor = `text-${colorName}-600`;
-                const hoverBorder = `hover:border-${colorName}-400`;
-                const hoverBg = `hover:bg-${colorName}-50/30`;
-                const hoverText = `group-hover:text-${colorName}-700`;
-                const focusRing = `focus:ring-${colorName}-500`;
-                const focusBorder = `focus:border-${colorName}-500`;
-                const lainnyaColor = `text-${colorName}-600`;
-                const lainnyaHover = `group-hover:text-${colorName}-700`;
-                const num = sIdx + 1;
-
-                const topicsHTML = sec.topics.map(t => `
-                                    <label class="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 ${hoverBorder} ${hoverBg} transition cursor-pointer group">
-                                        <input type="checkbox" name="bangkom[]" value="${escHTML(t.value)}" class="mt-1 w-4 h-4 ${checkColor} rounded border-slate-300 ${focusRing}">
-                                        <div>
-                                            <span class="block text-sm font-semibold text-slate-800 ${hoverText}">${escHTML(t.value)}</span>
-                                            ${t.desc ? `<span class="block text-xs text-slate-500 mt-1">${escHTML(t.desc)}</span>` : ''}
-                                        </div>
-                                    </label>`).join('\n');
-
-                return `
-                        <!-- SUBKOMPETENSI ${num}: ${sec.title} -->
-                        <div class="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
-                            <div class="bg-gradient-to-r ${fromColor} to-slate-50/40 px-5 py-3 border-b border-slate-200 flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-base font-bold text-slate-800">${num}. ${escHTML(sec.title)}</h3>
-                                </div>
-                            </div>
-                            <div class="p-5 space-y-4">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    ${topicsHTML}
-                                </div>
-
-                                <!-- Opsi Lainnya untuk Subkompetensi ${num} -->
-                                <div class="pt-3 border-t border-slate-100">
-                                    <label class="flex items-center gap-3 cursor-pointer group mb-2">
-                                        <input type="checkbox" id="check-lainnya-${num}" class="w-4 h-4 ${checkColor} rounded border-slate-300 ${focusRing}" onchange="toggleSubLainnya(${num})">
-                                        <span class="text-sm font-semibold text-slate-700 ${lainnyaHover}">Lainnya (${escHTML(sec.title)})</span>
-                                    </label>
-                                    <div id="wrapper-lainnya-${num}" class="hidden pl-7">
-                                        <input type="text" id="input-lainnya-${num}" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm ${focusRing} ${focusBorder} bg-white" placeholder="Tuliskan topik pelatihan ${escHTML(sec.title)} lainnya yang Anda butuhkan...">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
-            }).join('\n');
-
-            const title = document.getElementById('survey-title').value;
-            const desc = document.getElementById('survey-desc').value;
-
-            // Download konfigurasi sebagai JSON terlebih dahulu
-            const config = {
-                surveyTitle: title,
-                surveyDesc: desc,
-                sections: surveyData.sections
-            };
-
-            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'survey-config.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            showToast('Konfigurasi JSON berhasil diunduh! Kirimkan ke Antigravity untuk diterapkan ke index.html');
+            if (error) { alert('Login gagal: ' + error.message); return; }
+            const { data: isAdmin } = await adminSupabase.rpc('is_survey_admin');
+            if (!isAdmin) {
+                await adminSupabase.auth.signOut();
+                setAdminSession(null);
+                alert('Akun ini belum didaftarkan sebagai admin survei.');
+                return;
+            }
+            setAdminSession(data.session);
         }
-
+        async function signOutAdmin(){await adminSupabase.auth.signOut();setAdminSession(null)}
+        async function loadAdminState() {
+            const { data: { session } } = await adminSupabase.auth.getSession();
+            if (session) {
+                const { data: isAdmin } = await adminSupabase.rpc('is_survey_admin');
+                setAdminSession(isAdmin ? session : null);
+            } else {
+                setAdminSession(null);
+            }
+            const { data, error } = await adminSupabase.from('survey_config').select('config').eq('id', 'active').maybeSingle();
+            if (!error && data?.config) {
+                surveyData = { sections: data.config.sections || [] };
+                document.getElementById('survey-title').value = data.config.surveyTitle || '';
+                document.getElementById('survey-desc').value = data.config.surveyDesc || '';
+                renderSections();
+            }
+        }
+        async function applyChanges(){if(!adminSession){alert('Silakan login admin terlebih dahulu.');return}surveyData.sections.forEach((s,i)=>{const input=document.getElementById(`sec-title-${i}`);if(input)s.title=input.value.trim()});const config={surveyTitle:document.getElementById('survey-title').value.trim(),surveyDesc:document.getElementById('survey-desc').value.trim(),sections:surveyData.sections};if(!config.surveyTitle||!config.sections.length||config.sections.some(s=>!s.title||!s.topics.length||s.topics.some(t=>!t.value.trim()))){alert('Judul, nama subkompetensi, dan minimal satu topik per subkompetensi wajib diisi.');return}const b=document.getElementById('save-config-button');b.disabled=true;b.textContent='Menyimpan…';const {error}=await adminSupabase.from('survey_config').upsert({id:'active',config,updated_at:new Date().toISOString()});b.disabled=false;b.textContent='Simpan & Terapkan';if(error){alert('Gagal menyimpan: '+error.message);return}showToast('Tersimpan. Survei live menggunakan konfigurasi baru.')}
         function exportConfig() {
             surveyData.sections.forEach((s, sIdx) => {
                 const titleEl = document.getElementById(`sec-title-${sIdx}`);
@@ -511,7 +516,7 @@
         }
 
         // Init
-        document.addEventListener('DOMContentLoaded', renderSections);
+        document.addEventListener('DOMContentLoaded', async () => { renderSections(); await loadAdminState(); });
     </script>
 </body>
 </html>

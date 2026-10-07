@@ -37,3 +37,11 @@ Aplikasi web survei pemetaan kebutuhan pengembangan kompetensi (Bangkom) pegawai
 - **Tailwind CSS (CDN)**
 - **Chart.js (CDN)**
 - **Supabase JS Client (CDN)**
+
+## Admin & penyimpanan draf
+
+- Editor admin tersedia di `/editor.html`. Editor menggunakan Supabase Auth dan menyimpan konfigurasi aktif ke tabel `survey_config`.
+- Jalankan `supabase-survey-config.sql` lewat Supabase SQL Editor.
+- Buat user admin dari Supabase Dashboard → Authentication → Users. Salin UUID user tersebut lalu jalankan perintah `insert` yang dicontohkan di file SQL untuk memasukkannya ke `survey_admins`. Nonaktifkan pendaftaran publik jika tidak diperlukan.
+- Setelah perubahan kode dideploy ke Vercel, login ke `/editor.html`, ubah kuesioner, lalu klik **Simpan & Terapkan**. Halaman survei dan kategori dashboard membaca konfigurasi aktif dari Supabase.
+- Draf jawaban disimpan otomatis di `localStorage` browser/perangkat responden dan dihapus setelah pengiriman ke Supabase berhasil. Draf tidak tersinkron antarperangkat.

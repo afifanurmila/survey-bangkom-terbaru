@@ -391,6 +391,16 @@
         // LOAD DATA & CONTROLLER
         // ========================================================
         async function loadAllData() {
+            if (supabaseClient) {
+                const { data: configRow } = await supabaseClient.from('survey_config').select('config').eq('id', 'active').maybeSingle();
+                if (configRow?.config?.sections) {
+                    const palette = ['#3b82f6', '#10b981', '#f59e0b', '#a855f7'];
+                    Object.keys(TOPIK_CATEGORIES).forEach(key => delete TOPIK_CATEGORIES[key]);
+                    configRow.config.sections.forEach((section, index) => (section.topics || []).forEach(topic => {
+                        TOPIK_CATEGORIES[topic.value] = { cat: section.title, color: palette[((Number(section.color) || index + 1) - 1) % palette.length] };
+                    }));
+                }
+            }
             if (!supabaseClient) {
                 // Supabase belum terkonfigurasi
                 allResponses = [];
