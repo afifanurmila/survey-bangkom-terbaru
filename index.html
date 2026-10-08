@@ -59,7 +59,7 @@
             <h1 id="survey-title" class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-3">
                 Survei Kebutuhan Pengembangan Kompetensi Pegawai
             </h1>
-            <p id="survey-description" class="text-slate-600 text-sm md:text-base leading-relaxed mb-4">
+            <p id="survey-description" class="text-slate-600 text-sm md:text-base leading-relaxed mb-4 whitespace-pre-line">
                 Survei ini bertujuan untuk memetakan kebutuhan pengembangan kompetensi pegawai Deputi I LAN RI pada aspek kompetensi inti. Hasilnya digunakan untuk mengidentifikasi prioritas program pelatihan dan pengembangan pegawai secara langsung dan terarah.
             </p>
             <div class="flex items-center gap-4 text-xs md:text-sm font-medium text-slate-500 pt-3 border-t border-slate-100">
@@ -92,7 +92,7 @@
                 <div id="step-1" class="step-content active">
                     <div class="mb-6">
                         <h2 id="profile-heading" class="text-xl font-bold text-slate-900">Profil Pegawai</h2>
-                        <p id="profile-description" class="text-sm text-slate-500 mt-1">Pilih Unit Organisasi dan Nama Anda. Data NIP, Pangkat/Golongan, Jabatan, Jenjang, dan Masa Kerja akan terisi secara otomatis.</p>
+                        <p id="profile-description" class="text-sm text-slate-500 mt-1 whitespace-pre-line">Pilih Unit Organisasi dan Nama Anda. Data NIP, Pangkat/Golongan, Jabatan, Jenjang, dan Masa Kerja akan terisi secara otomatis.</p>
                     </div>
 
                     <div class="space-y-6">
@@ -160,7 +160,7 @@
                 <div id="step-2" class="step-content">
                     <div class="mb-6">
                         <h2 id="needs-heading" class="text-xl font-bold text-slate-900">Identifikasi Kebutuhan Pengembangan Kompetensi Pegawai</h2>
-                        <p id="needs-description" class="text-sm text-slate-500 mt-1">
+                        <p id="needs-description" class="text-sm text-slate-500 mt-1 whitespace-pre-line">
                             Pilih topik pelatihan yang dibutuhkan untuk mendukung pelaksanaan tugas Anda. Anda dapat memilih <strong>lebih dari satu</strong> topik pada setiap subkompetensi, serta menambahkan topik lainnya jika dibutuhkan.
                         </p>
                     </div>
@@ -179,7 +179,7 @@
                 <div id="step-3" class="step-content">
                     <div class="mb-6">
                         <h2 id="schedule-heading" class="text-xl font-bold text-slate-900">Preferensi Pelaksanaan & Metode Pelatihan</h2>
-                        <p id="schedule-description" class="text-sm text-slate-500 mt-1">Tentukan pilihan hari, waktu, serta metode pembelajaran yang paling optimal dan sesuai preferensi Anda.</p>
+                        <p id="schedule-description" class="text-sm text-slate-500 mt-1 whitespace-pre-line">Tentukan pilihan hari, waktu, serta metode pembelajaran yang paling optimal dan sesuai preferensi Anda.</p>
                     </div>
 
                     <div id="schedule-options" class="space-y-8"></div>
@@ -191,7 +191,7 @@
                 <div id="step-4" class="step-content">
                     <div class="mb-6">
                         <h2 id="sharing-heading" class="text-xl font-bold text-slate-900">Kesediaan Berbagi Pengetahuan</h2>
-                        <p id="sharing-description" class="text-sm text-slate-500 mt-1">Pemetaan potensi transfer pengetahuan (Knowledge Sharing / Co-learning) antar pegawai di lingkungan internal Deputi I.</p>
+                        <p id="sharing-description" class="text-sm text-slate-500 mt-1 whitespace-pre-line">Pemetaan potensi transfer pengetahuan (Knowledge Sharing / Co-learning) antar pegawai di lingkungan internal Deputi I.</p>
                     </div>
 
                     <div class="space-y-6">
@@ -275,9 +275,10 @@
         }
 
         function escapeSurveyText(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        function formatSurveyText(value) { return escapeSurveyText(String(value ?? '').replace(/<br\s*\/?>/gi, '\n')); }
         function renderSurveyFormContent(content) {
             if (!content) return;
-            const setText = (id, value) => { const element = document.getElementById(id); if (element && value) element.textContent = value; };
+            const setText = (id, value) => { const element = document.getElementById(id); if (element && value) element.textContent = String(value).replace(/<br\s*\/?>/gi, '\n'); };
             setText('profile-heading', content.profile?.title);
             setText('profile-description', content.profile?.description);
             setText('profile-unit-label', content.profile?.unitLabel);
@@ -325,7 +326,7 @@
                     let control='';
                     if(q.type==='text'||q.type==='textarea') control=q.type==='textarea'?`<textarea name="custom_${escapeSurveyText(q.id)}" ${q.required?'required':''} rows="3" class="w-full px-4 py-3 rounded-lg border border-slate-300 text-sm" placeholder="${escapeSurveyText(q.placeholder||'')}"></textarea>`:`<input type="text" name="custom_${escapeSurveyText(q.id)}" ${q.required?'required':''} class="w-full px-4 py-3 rounded-lg border border-slate-300 text-sm" placeholder="${escapeSurveyText(q.placeholder||'')}">`;
                     else control=`<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${(q.options||[]).map(opt=>`<label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer"><input type="${q.type==='radio'?'radio':'checkbox'}" name="custom_${escapeSurveyText(q.id)}${q.type==='radio'?'':'[]'}" value="${escapeSurveyText(opt)}" class="w-4 h-4 text-blue-600 rounded"><span class="text-sm">${escapeSurveyText(opt)}</span></label>`).join('')}</div>`;
-                    return `<section class="border border-slate-200 rounded-xl p-5 space-y-3"><label class="block text-sm font-semibold text-slate-700">${escapeSurveyText(q.prompt||'Pertanyaan')}${required}</label>${q.description?`<p class="text-xs text-slate-500">${escapeSurveyText(q.description)}</p>`:''}${control}</section>`;
+                    return `<section class="border border-slate-200 rounded-xl p-5 space-y-3"><label class="block text-sm font-semibold text-slate-700">${escapeSurveyText(q.prompt||'Pertanyaan')}${required}</label>${q.description?`<p class="text-xs text-slate-500 whitespace-pre-line">${formatSurveyText(q.description)}</p>`:''}${control}</section>`;
                 }).join('');
             }
         }
@@ -333,7 +334,7 @@
         function renderSurveyTopics(config) {
             if (!config?.sections?.length) return; surveyConfig = config;
             if (config.surveyTitle) { document.getElementById('survey-title').textContent=config.surveyTitle; document.title=config.surveyTitle; }
-            if (config.surveyDesc) document.getElementById('survey-description').textContent=config.surveyDesc;
+            if (config.surveyDesc) document.getElementById('survey-description').textContent=String(config.surveyDesc).replace(/<br\s*\/?>/gi, '\n');
             renderSurveyFormContent(config.formContent || DEFAULT_FORM_CONTENT);
             const palette=['blue','emerald','amber','purple'];
             document.getElementById('topics-container').innerHTML=config.sections.map((sec,i)=>{

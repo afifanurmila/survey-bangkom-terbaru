@@ -440,7 +440,7 @@
                     [formContent.stepTitles[1], formContent.needs.title, formContent.needs.description, []],
                     [formContent.stepTitles[2], formContent.schedule.title, formContent.schedule.description, [...formContent.schedule.days.options, ...formContent.schedule.times.options, ...formContent.schedule.methods.options, formContent.schedule.strategyLearning.label, ...formContent.schedule.strategyLearning.options.map(o=>o.value)]],
                     [formContent.stepTitles[3], formContent.sharing.title, formContent.sharing.description, [formContent.sharing.question, formContent.sharing.yesLabel, formContent.sharing.noLabel, formContent.sharing.expertiseLabel]]
-                ].map(([nav, heading, description, items]) => `<div class="border border-slate-200 rounded-xl p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-blue-700">${esc(nav)}</p><h3 class="font-bold text-slate-900 mt-1">${esc(heading)}</h3><p class="text-slate-600 text-xs mt-1">${esc(description)}</p>${items.length ? `<ul class="list-disc pl-5 mt-2 text-xs text-slate-700">${items.map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : ''}</div>`).join('')}
+                ].map(([nav, heading, description, items]) => `<div class="border border-slate-200 rounded-xl p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-blue-700">${esc(nav)}</p><h3 class="font-bold text-slate-900 mt-1">${esc(heading)}</h3><p class="text-slate-600 text-xs mt-1 whitespace-pre-line">${esc(String(description||'').replace(/<br\s*\/?>/gi,'\n'))}</p>${items.length ? `<ul class="list-disc pl-5 mt-2 text-xs text-slate-700">${items.map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : ''}</div>`).join('')}
             `;
             document.getElementById('preview-modal').classList.remove('hidden');
         }
@@ -525,7 +525,7 @@
                 formContent = mergeConfigDefaults(JSON.parse(JSON.stringify(DEFAULT_FORM_CONTENT)), data.config.formContent || {});
                 renderFormContentEditor();
                 document.getElementById('survey-title').value = data.config.surveyTitle || '';
-                document.getElementById('survey-desc').value = data.config.surveyDesc || '';
+                document.getElementById('survey-desc').value = String(data.config.surveyDesc || '').replace(/<br\s*\/?>/gi, '\n');
                 renderSections();
             }
         }
