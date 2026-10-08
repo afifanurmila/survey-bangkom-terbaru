@@ -924,7 +924,7 @@
                 "ID", "Waktu Kirim", "Nama Pegawai", "NIP", "Pangkat Golongan", 
                 "Jabatan", "Jenjang Jabatan", "Masa Kerja", "Unit Organisasi", 
                 "Topik Pelatihan", "Topik Lainnya", "Preferensi Hari", 
-                "Preferensi Waktu", "Metode Pelatihan", "Bersedia Berbagi", "Bidang Keahlian"
+                "Preferensi Waktu", "Metode Pelatihan", "Strategi Pembelajaran & Pertanyaan Tambahan", "Bersedia Berbagi", "Bidang Keahlian"
             ];
 
             const rows = allResponses.map(r => [
@@ -942,6 +942,7 @@
                 `"${Array.isArray(r.preferensi_hari) ? r.preferensi_hari.join("; ") : ""}"`,
                 `"${Array.isArray(r.preferensi_waktu) ? r.preferensi_waktu.join("; ") : ""}"`,
                 `"${Array.isArray(r.metode_pelatihan) ? r.metode_pelatihan.join("; ") : ""}"`,
+                `"${JSON.stringify(r.jawaban_tambahan || {}).replace(/"/g, '""')}"`,
                 r.bersedia_berbagi || "",
                 `"${(r.bidang_keahlian || "").replace(/"/g, '""')}"`
             ]);

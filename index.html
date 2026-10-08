@@ -151,7 +151,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                <div id="custom-questions-step-1" class="space-y-6 mt-6"></div>
+                    </div>
 
                 <!-- ========================================== -->
                 <!-- STEP 2: KEBUTUHAN BANGKOM SESUAI HCDP      -->
@@ -167,6 +168,7 @@
                     <div class="space-y-6">
 
                         <div id="topics-container" class="space-y-6" aria-live="polite"></div>
+                        <div id="custom-questions-step-2" class="space-y-6"></div>
 
                     </div>
                 </div>
@@ -181,6 +183,7 @@
                     </div>
 
                     <div id="schedule-options" class="space-y-8"></div>
+                    <div id="custom-questions-step-3" class="space-y-6 mt-8"></div>
                 </div>
 
                 <!-- STEP 4: KESEDIAAN BERBAGI PENGETAHUAN      -->
@@ -222,6 +225,7 @@
                             <p id="sharing-expertise-hint" class="text-xs text-slate-600 mb-3">Contoh: Best practices analisis regulasi daerah, teknik visualisasi data kebijakan, tips public consultation, dll.</p>
                             <textarea id="textarea-keahlian" data-config-placeholder="sharing-expertise" rows="3" class="w-full px-4 py-3 rounded-lg border border-blue-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm" placeholder="Tuliskan bidang keahlian atau pengalaman kerja Anda di sini..."></textarea>
                         </div>
+                    <div id="custom-questions-step-4" class="space-y-6 mt-6"></div>
                     </div>
                 </div>
 
@@ -260,7 +264,7 @@
         const SUPABASE_ANON_KEY = "sb_publishable_iYfTy-1HABdhlGGMhB8AqA_4lO3Harp";
         let supabaseClient = null;
         const DEFAULT_SURVEY_CONFIG = {"sections": [{"id": 1, "title": "Analisis Kebijakan", "color": 1, "topics": [{"value": "Riset & Analisis Kebijakan", "desc": "Identifikasi masalah; perumusan pertanyaan; pengolahan data; penyusunan policy brief/paper."}, {"value": "Perumusan Kebijakan Publik", "desc": "Penyusunan alternatif kebijakan; cost-benefit analisis; rekomendasi naskah kebijakan."}, {"value": "Policy Impact Assessment", "desc": "Penilaian dampak ekonomi; sosial; kelembagaan; serta indikator dampak kebijakan."}, {"value": "Monitoring & Evaluasi Kebijakan", "desc": "Desain monitoring; indikator kinerja kebijakan; evaluasi efektivitas dan efisiensi."}]}, {"id": 2, "title": "Advokasi Kebijakan", "color": 2, "topics": [{"value": "Advokasi & Komunikasi Kebijakan", "desc": "Strategi advokasi; pemetaan aktor; penyusunan pesan; policy pitching."}, {"value": "Stakeholder Engagement (Kebijakan)", "desc": "Analisis kepentingan/pengaruh stakeholder; teknik kolaborasi; pengelolaan konflik."}, {"value": "Public Consultation", "desc": "Desain instrumen konsultasi publik; fasilitasi forum; integrasi hasil konsultasi."}, {"value": "Regulatory Impact Assessment (RIA)", "desc": "Identifikasi masalah regulasi; penyusunan opsi regulasi; analisis dampak alternatif regulasi."}, {"value": "Legal Drafting", "desc": "Teknik penyusunan peraturan; perumusan norma hukum; harmonisasi & sinkronisasi regulasi."}, {"value": "Inovasi Kebijakan & Program", "desc": "Design Thinking kebijakan; co-creation; perancangan & implementasi inovasi."}]}, {"id": 3, "title": "Manajemen Stakeholders", "color": 3, "topics": [{"value": "Stakeholder Engagement (Pelayanan Publik)", "desc": "Membangun engagement; komunikasi stakeholder; kolaborasi & pengelolaan hubungan."}, {"value": "Co-Creation & Collaborative Innovation", "desc": "Co-design solusi pelayanan publik; collaborative problem solving pemerintah & mitra."}]}, {"id": 4, "title": "Manajemen Ekosistem Pelayanan Publik", "color": 4, "topics": [{"value": "Adaptive Governance", "desc": "Pengambilan keputusan adaptif; respons terhadap perubahan; ketidakpastian tata kelola."}, {"value": "Reformasi Birokrasi", "desc": "Transformasi tata kelola; penyederhanaan birokrasi; perubahan budaya kerja."}, {"value": "Manajemen Perubahan (Change Management)", "desc": "Analisis kesiapan organisasi; strategi komunikasi; pengelolaan resistensi perubahan."}, {"value": "Public Sector Innovation", "desc": "Ideasi inovasi pelayanan publik; model implementasi; scaling-up inovasi sektor publik."}, {"value": "Design Thinking", "desc": "Empathize; Define; Ideate; Prototype; dan Testing untuk perbaikan layanan publik."}]}], "surveyTitle": "Survei Kebutuhan Pengembangan Kompetensi Pegawai", "surveyDesc": "Survei ini bertujuan untuk memetakan kebutuhan pengembangan kompetensi pegawai Deputi I LAN RI pada aspek kompetensi inti. Hasilnya digunakan untuk mengidentifikasi prioritas program pelatihan dan pengembangan pegawai secara langsung dan terarah."};
-        const DEFAULT_FORM_CONTENT = {"stepTitles":["Bagian 1: Profil Pegawai","Bagian 2: Kebutuhan Pengembangan Kompetensi","Bagian 3: Preferensi Pelaksanaan","Bagian 4: Knowledge Sharing"],"profile":{"title":"Profil Pegawai","description":"Pilih Unit Organisasi dan Nama Anda. Data NIP, Pangkat/Golongan, Jabatan, Jenjang, dan Masa Kerja akan terisi secara otomatis.","unitLabel":"1. Direktorat / Unit Organisasi","nameLabel":"2. Nama Pegawai","fieldLabels":{"nip":"NIP","rank":"Pangkat / Golongan Ruang","job":"Jabatan","level":"Jenjang / Kategori Jabatan","tenure":"Masa Kerja Organisasi"}},"needs":{"title":"Identifikasi Kebutuhan Pengembangan Kompetensi Pegawai","description":"Pilih topik pelatihan yang dibutuhkan untuk mendukung pelaksanaan tugas Anda. Anda dapat memilih lebih dari satu topik pada setiap subkompetensi, serta menambahkan topik lainnya jika dibutuhkan."},"schedule":{"title":"Preferensi Pelaksanaan & Metode Pelatihan","description":"Tentukan pilihan hari, waktu, serta metode pembelajaran yang paling optimal dan sesuai preferensi Anda.","days":{"label":"1. Pilihan Hari Pelaksanaan","hint":"(Bisa pilih lebih dari satu hari yang sesuai dengan jadwal Anda)","options":["Senin","Selasa","Rabu","Kamis"]},"times":{"label":"2. Preferensi Waktu / Jam Pelaksanaan","hint":"(Bisa pilih lebih dari satu sesi)","options":["Sesi Pagi (08.00 – 12.00 WIB)","Sesi Siang (13.00 – 16.00 WIB)"]},"methods":{"label":"3. Metode Pelatihan yang Diinginkan","hint":"(Bisa pilih lebih dari satu metode)","options":["Offline Learning","Online Learning"],"otherLabel":"Metode Lainnya (Opsional)","otherPlaceholder":"Contoh: Hybrid, Mentoring 1-on-1, Coaching, Belajar Mandiri..."}},"sharing":{"title":"Kesediaan Berbagi Pengetahuan","description":"Pemetaan potensi transfer pengetahuan (Knowledge Sharing / Co-learning) antar pegawai di lingkungan internal Deputi I.","question":"Apakah Anda bersedia berkontribusi sebagai narasumber internal (Knowledge Sharing)?","yesLabel":"Ya, Bersedia","yesHint":"Siap berbagi keahlian/pengalaman teknis","noLabel":"Belum Bersedia","noHint":"Fokus sebagai peserta terlebih dahulu","expertiseLabel":"Bidang keahlian atau pengalaman yang dapat Anda bagikan:","expertiseHint":"Contoh: Best practices analisis regulasi daerah, teknik visualisasi data kebijakan, tips public consultation, dll.","expertisePlaceholder":"Tuliskan bidang keahlian atau pengalaman kerja Anda di sini..."}};
+        const DEFAULT_FORM_CONTENT = {"stepTitles":["Bagian 1: Profil Pegawai","Bagian 2: Kebutuhan Pengembangan Kompetensi","Bagian 3: Preferensi Pelaksanaan","Bagian 4: Knowledge Sharing"],"profile":{"title":"Profil Pegawai","description":"Pilih Unit Organisasi dan Nama Anda. Data NIP, Pangkat/Golongan, Jabatan, Jenjang, dan Masa Kerja akan terisi secara otomatis.","unitLabel":"1. Direktorat / Unit Organisasi","nameLabel":"2. Nama Pegawai","fieldLabels":{"nip":"NIP","rank":"Pangkat / Golongan Ruang","job":"Jabatan","level":"Jenjang / Kategori Jabatan","tenure":"Masa Kerja Organisasi"}},"needs":{"title":"Identifikasi Kebutuhan Pengembangan Kompetensi Pegawai","description":"Pilih topik pelatihan yang dibutuhkan untuk mendukung pelaksanaan tugas Anda. Anda dapat memilih lebih dari satu topik pada setiap subkompetensi, serta menambahkan topik lainnya jika dibutuhkan."},"schedule":{"title":"Preferensi Pelaksanaan & Metode Pelatihan","description":"Tentukan pilihan hari, waktu, serta metode pembelajaran yang paling optimal dan sesuai preferensi Anda.","days":{"label":"1. Pilihan Hari Pelaksanaan","hint":"(Bisa pilih lebih dari satu hari yang sesuai dengan jadwal Anda)","options":["Senin","Selasa","Rabu","Kamis"]},"times":{"label":"2. Preferensi Waktu / Jam Pelaksanaan","hint":"(Bisa pilih lebih dari satu sesi)","options":["Sesi Pagi (08.00 – 12.00 WIB)","Sesi Siang (13.00 – 16.00 WIB)"]},"methods":{"label":"3. Metode Pelatihan yang Diinginkan","hint":"(Bisa pilih lebih dari satu metode)","options":["Offline Learning","Online Learning"],"otherLabel":"Metode Lainnya (Opsional)","otherPlaceholder":"Contoh: Hybrid, Mentoring 1-on-1, Coaching, Belajar Mandiri..."},"strategyLearning":{"label":"Strategi Pembelajaran","hint":"Pilih strategi pembelajaran yang dibutuhkan (bisa lebih dari satu).","required":false,"options":[{"value":"Formal Learning","desc":"Desain kurikulum; pengembangan modul; metode pembelajaran; blended learning; pembelajaran digital; evaluasi pembelajaran."},{"value":"Social Learning","desc":"Knowledge sharing; peer learning; mentoring & coaching; Community of Practice; collaborative learning; benchmarking."},{"value":"Experiential Learning","desc":"Learning by doing; project-based learning; on-the-job learning; job assignment; problem-based learning; simulasi dan refleksi."}]}},"sharing":{"title":"Kesediaan Berbagi Pengetahuan","description":"Pemetaan potensi transfer pengetahuan (Knowledge Sharing / Co-learning) antar pegawai di lingkungan internal Deputi I.","question":"Apakah Anda bersedia berkontribusi sebagai narasumber internal (Knowledge Sharing)?","yesLabel":"Ya, Bersedia","yesHint":"Siap berbagi keahlian/pengalaman teknis","noLabel":"Belum Bersedia","noHint":"Fokus sebagai peserta terlebih dahulu","expertiseLabel":"Bidang keahlian atau pengalaman yang dapat Anda bagikan:","expertiseHint":"Contoh: Best practices analisis regulasi daerah, teknik visualisasi data kebijakan, tips public consultation, dll.","expertisePlaceholder":"Tuliskan bidang keahlian atau pengalaman kerja Anda di sini..."},"customQuestions":[]};
         let surveyConfig = DEFAULT_SURVEY_CONFIG;
         const DRAFT_STORAGE_KEY = "survey_bangkom_draft_v1";
         let draftSaveTimer = null;
@@ -303,7 +307,27 @@
             const q = content.schedule || {};
             const makeOptions = (items, name) => (items || []).map(item => `<label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm"><input type="checkbox" name="${name}[]" value="${escapeSurveyText(item)}" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"><span class="text-sm font-semibold text-slate-800">${escapeSurveyText(item)}</span></label>`).join('');
             const group = (key, name, cols) => `<div><label class="block text-sm font-semibold text-slate-700 mb-1">${escapeSurveyText(q[key]?.label || '')} <span class="text-rose-500">*</span></label><p class="text-xs text-slate-500 mb-3">${escapeSurveyText(q[key]?.hint || '')}</p><div class="grid ${cols} gap-3">${makeOptions(q[key]?.options, name)}</div></div>`;
-            document.getElementById('schedule-options').innerHTML = `${group('days','preferensi_hari','grid-cols-2 sm:grid-cols-4')}${group('times','preferensi_waktu','grid-cols-1 sm:grid-cols-2')}<div><label class="block text-sm font-semibold text-slate-700 mb-1">${escapeSurveyText(q.methods?.label || '')} <span class="text-rose-500">*</span></label><p class="text-xs text-slate-500 mb-3">${escapeSurveyText(q.methods?.hint || '')}</p><div class="space-y-3"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${makeOptions(q.methods?.options,'metode_pelatihan')}</div><div class="border border-dashed border-slate-300 rounded-xl p-4 bg-slate-50/40"><label class="flex items-center gap-3 cursor-pointer group mb-2"><input type="checkbox" id="check-metode-lainnya" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" onchange="toggleMetodeLainnya(this)"><span class="text-sm font-semibold text-slate-700">${escapeSurveyText(q.methods?.otherLabel || 'Metode Lainnya')}</span></label><div id="wrapper-metode-lainnya" class="hidden pl-7"><input type="text" id="input-metode-lainnya" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white" placeholder="${escapeSurveyText(q.methods?.otherPlaceholder || '')}"></div></div></div></div>`;
+            document.getElementById('schedule-options').innerHTML = `${group('days','preferensi_hari','grid-cols-2 sm:grid-cols-4')}${group('times','preferensi_waktu','grid-cols-1 sm:grid-cols-2')}<div><label class="block text-sm font-semibold text-slate-700 mb-1">${escapeSurveyText(q.methods?.label || '')} <span class="text-rose-500">*</span></label><p class="text-xs text-slate-500 mb-3">${escapeSurveyText(q.methods?.hint || '')}</p><div class="space-y-3"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${makeOptions(q.methods?.options,'metode_pelatihan')}</div><div class="border border-dashed border-slate-300 rounded-xl p-4 bg-slate-50/40"><label class="flex items-center gap-3 cursor-pointer group mb-2"><input type="checkbox" id="check-metode-lainnya" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" onchange="toggleMetodeLainnya(this)"><span class="text-sm font-semibold text-slate-700">${escapeSurveyText(q.methods?.otherLabel || 'Metode Lainnya')}</span></label><div id="wrapper-metode-lainnya" class="hidden pl-7"><input type="text" id="input-metode-lainnya" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white" placeholder="${escapeSurveyText(q.methods?.otherPlaceholder || '')}"></div></div></div></div>${renderStrategyLearning(q.strategyLearning)}`;
+            renderCustomQuestions(content);
+        }
+
+
+        function renderStrategyLearning(config) {
+            const c=config||{};
+            return `<div><label class="block text-sm font-semibold text-slate-700 mb-1">${escapeSurveyText(c.label||'Strategi Pembelajaran')} ${c.required?'<span class="text-rose-500">*</span>':''}</label><p class="text-xs text-slate-500 mb-3">${escapeSurveyText(c.hint||'')}</p><div class="grid grid-cols-1 gap-3">${(c.options||[]).map((o,i)=>`<label class="border border-slate-200 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm"><input type="checkbox" name="strategi_pembelajaran[]" value="${escapeSurveyText(o.value)}" class="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300"><span><span class="block text-sm font-semibold text-slate-800">${escapeSurveyText(o.value)}</span><span class="block text-xs text-slate-500 mt-1">${escapeSurveyText(o.desc||'')}</span></span></label>`).join('')}</div></div>`;
+        }
+        function renderCustomQuestions(content) {
+            for(let step=1;step<=4;step++) {
+                const host=document.getElementById(`custom-questions-step-${step}`); if(!host)continue;
+                const questions=(content.customQuestions||[]).filter(q=>Number(q.step)===step);
+                host.innerHTML=questions.map(q=>{
+                    const required=q.required?'<span class="text-rose-500">*</span>':'';
+                    let control='';
+                    if(q.type==='text'||q.type==='textarea') control=q.type==='textarea'?`<textarea name="custom_${escapeSurveyText(q.id)}" ${q.required?'required':''} rows="3" class="w-full px-4 py-3 rounded-lg border border-slate-300 text-sm" placeholder="${escapeSurveyText(q.placeholder||'')}"></textarea>`:`<input type="text" name="custom_${escapeSurveyText(q.id)}" ${q.required?'required':''} class="w-full px-4 py-3 rounded-lg border border-slate-300 text-sm" placeholder="${escapeSurveyText(q.placeholder||'')}">`;
+                    else control=`<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${(q.options||[]).map(opt=>`<label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer"><input type="${q.type==='radio'?'radio':'checkbox'}" name="custom_${escapeSurveyText(q.id)}${q.type==='radio'?'':'[]'}" value="${escapeSurveyText(opt)}" class="w-4 h-4 text-blue-600 rounded"><span class="text-sm">${escapeSurveyText(opt)}</span></label>`).join('')}</div>`;
+                    return `<section class="border border-slate-200 rounded-xl p-5 space-y-3"><label class="block text-sm font-semibold text-slate-700">${escapeSurveyText(q.prompt||'Pertanyaan')}${required}</label>${q.description?`<p class="text-xs text-slate-500">${escapeSurveyText(q.description)}</p>`:''}${control}</section>`;
+                }).join('');
+            }
         }
 
         function renderSurveyTopics(config) {
@@ -572,6 +596,12 @@
                     return false;
                 }
             }
+            const invalidCustom=(surveyConfig?.formContent?.customQuestions||[]).filter(q=>Number(q.step)===step&&q.required).find(q=>{
+                const controls=Array.from(document.querySelectorAll(`[name^="custom_${q.id}"]`));
+                return controls.length===0||!controls.some(el=>el.type==='checkbox'||el.type==='radio'?el.checked:el.value.trim());
+            });
+            if(invalidCustom){alert(`Mohon isi pertanyaan: ${invalidCustom.prompt}`);return false;}
+            if(step===3&&surveyConfig?.formContent?.schedule?.strategyLearning?.required&&!document.querySelector('input[name="strategi_pembelajaran[]"]:checked')){alert('Silakan pilih strategi pembelajaran.');return false;}
             return true;
         }
 
@@ -611,6 +641,16 @@
                 if (metLain) checkedMetode.push(metLain);
             }
 
+            const additionalAnswers={strategi_pembelajaran:Array.from(document.querySelectorAll('input[name="strategi_pembelajaran[]"]:checked')).map(el=>el.value)};
+            (surveyConfig?.formContent?.customQuestions||[]).forEach(q=>{
+                const controls=Array.from(document.querySelectorAll(`[name^="custom_${q.id}"]`));
+                let answer;
+                if(q.type==='checkbox') answer=controls.filter(el=>el.checked).map(el=>el.value);
+                else if(q.type==='radio') answer=controls.find(el=>el.checked)?.value||null;
+                else answer=controls[0]?.value?.trim()||null;
+                additionalAnswers[q.id]={question:q.prompt,type:q.type,step:Number(q.step),answer};
+            });
+
             const formData = {
                 unit_organisasi: document.getElementById('select-unit').value,
                 nama: document.getElementById('select-pegawai').value,
@@ -624,6 +664,7 @@
                 preferensi_hari: checkedHari,
                 preferensi_waktu: checkedWaktu,
                 metode_pelatihan: checkedMetode,
+                jawaban_tambahan: additionalAnswers,
                 bersedia_berbagi: sharing.value,
                 bidang_keahlian: sharing.value === 'ya' ? document.getElementById('textarea-keahlian').value.trim() : null,
                 created_at: new Date().toISOString()
