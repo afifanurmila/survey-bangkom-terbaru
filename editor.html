@@ -91,7 +91,10 @@
             </div>
         </div>
 
-        <!-- Editor Subkompetensi dan Topik -->
+        <!-- Editor isi seluruh bagian form selain daftar topik Bangkom -->
+        <div id="form-content-editor" class="space-y-5"></div>
+
+        <!-- Editor Subkompetensi dan Topik Bangkom -->
         <div id="sections-container" class="space-y-5">
             <!-- Dirender dinamis oleh JS -->
         </div>
@@ -227,6 +230,9 @@
                                 }
                     ]
         };
+
+        const DEFAULT_FORM_CONTENT = {"stepTitles":["Bagian 1: Profil Pegawai","Bagian 2: Kebutuhan Pengembangan Kompetensi","Bagian 3: Preferensi Pelaksanaan","Bagian 4: Knowledge Sharing"],"profile":{"title":"Profil Pegawai","description":"Pilih Unit Organisasi dan Nama Anda. Data NIP, Pangkat/Golongan, Jabatan, Jenjang, dan Masa Kerja akan terisi secara otomatis.","unitLabel":"1. Direktorat / Unit Organisasi","nameLabel":"2. Nama Pegawai","fieldLabels":{"nip":"NIP","rank":"Pangkat / Golongan Ruang","job":"Jabatan","level":"Jenjang / Kategori Jabatan","tenure":"Masa Kerja Organisasi"}},"needs":{"title":"Identifikasi Kebutuhan Pengembangan Kompetensi Pegawai","description":"Pilih topik pelatihan yang dibutuhkan untuk mendukung pelaksanaan tugas Anda. Anda dapat memilih lebih dari satu topik pada setiap subkompetensi, serta menambahkan topik lainnya jika dibutuhkan."},"schedule":{"title":"Preferensi Pelaksanaan & Metode Pelatihan","description":"Tentukan pilihan hari, waktu, serta metode pembelajaran yang paling optimal dan sesuai preferensi Anda.","days":{"label":"1. Pilihan Hari Pelaksanaan","hint":"(Bisa pilih lebih dari satu hari yang sesuai dengan jadwal Anda)","options":["Senin","Selasa","Rabu","Kamis"]},"times":{"label":"2. Preferensi Waktu / Jam Pelaksanaan","hint":"(Bisa pilih lebih dari satu sesi)","options":["Sesi Pagi (08.00 – 12.00 WIB)","Sesi Siang (13.00 – 16.00 WIB)"]},"methods":{"label":"3. Metode Pelatihan yang Diinginkan","hint":"(Bisa pilih lebih dari satu metode)","options":["Offline Learning","Online Learning"],"otherLabel":"Metode Lainnya (Opsional)","otherPlaceholder":"Contoh: Hybrid, Mentoring 1-on-1, Coaching, Belajar Mandiri..."}},"sharing":{"title":"Kesediaan Berbagi Pengetahuan","description":"Pemetaan potensi transfer pengetahuan (Knowledge Sharing / Co-learning) antar pegawai di lingkungan internal Deputi I.","question":"Apakah Anda bersedia berkontribusi sebagai narasumber internal (Knowledge Sharing)?","yesLabel":"Ya, Bersedia","yesHint":"Siap berbagi keahlian/pengalaman teknis","noLabel":"Belum Bersedia","noHint":"Fokus sebagai peserta terlebih dahulu","expertiseLabel":"Bidang keahlian atau pengalaman yang dapat Anda bagikan:","expertiseHint":"Contoh: Best practices analisis regulasi daerah, teknik visualisasi data kebijakan, tips public consultation, dll.","expertisePlaceholder":"Tuliskan bidang keahlian atau pengalaman kerja Anda di sini..."}};
+        let formContent = JSON.parse(JSON.stringify(DEFAULT_FORM_CONTENT));
 
         const COLORS = {
             1: { label: "Biru (Analisis)", border: "border-blue-500", badge: "preview-badge-1", header: "section-header-1", card: "section-color-1", ring: "focus:ring-blue-500", hover: "hover:border-blue-400 hover:bg-blue-50/30", check: "text-blue-600 focus:ring-blue-500" },
@@ -429,8 +435,36 @@
                         </div>
                     </div>
                 `).join('')}
+                ${[
+                    [formContent.stepTitles[0], formContent.profile.title, formContent.profile.description, [formContent.profile.unitLabel, formContent.profile.nameLabel]],
+                    [formContent.stepTitles[1], formContent.needs.title, formContent.needs.description, []],
+                    [formContent.stepTitles[2], formContent.schedule.title, formContent.schedule.description, [...formContent.schedule.days.options, ...formContent.schedule.times.options, ...formContent.schedule.methods.options]],
+                    [formContent.stepTitles[3], formContent.sharing.title, formContent.sharing.description, [formContent.sharing.question, formContent.sharing.yesLabel, formContent.sharing.noLabel, formContent.sharing.expertiseLabel]]
+                ].map(([nav, heading, description, items]) => `<div class="border border-slate-200 rounded-xl p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-blue-700">${esc(nav)}</p><h3 class="font-bold text-slate-900 mt-1">${esc(heading)}</h3><p class="text-slate-600 text-xs mt-1">${esc(description)}</p>${items.length ? `<ul class="list-disc pl-5 mt-2 text-xs text-slate-700">${items.map(item => `<li>${esc(item)}</li>`).join('')}</ul>` : ''}</div>`).join('')}
             `;
             document.getElementById('preview-modal').classList.remove('hidden');
+        }
+
+        function formField(path, label, value, multiline=false) {
+            const encoded = path.join('.');
+            const shown = Array.isArray(value) ? value.join('\n') : (value || '');
+            return `<label class="block text-xs font-semibold text-slate-600">${esc(label)}${multiline ? `<textarea data-form-path="${encoded}" data-form-lines="true" rows="${path.at(-1)==='options'?4:2}" oninput="updateFormField(this)" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-normal">${esc(shown)}</textarea>` : `<input data-form-path="${encoded}" oninput="updateFormField(this)" value="${escapeAttr(shown)}" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-normal">`}</label>`;
+        }
+        function renderFormContentEditor() {
+            const card = (title, fields, badge) => `<section class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4"><h2 class="text-base font-bold text-slate-900 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-slate-800 text-white text-xs flex items-center justify-center font-bold">${badge}</span>${title}</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${fields}</div></section>`;
+            const f = (path,label,multi=false) => formField(path,label,path.reduce((v,k)=>v?.[k],formContent),multi);
+            document.getElementById('form-content-editor').innerHTML = [
+                card('Bagian 1 · Profil Pegawai', f(['stepTitles',0],'Judul di navigasi')+f(['profile','title'],'Judul bagian')+f(['profile','description'],'Petunjuk bagian',true)+f(['profile','unitLabel'],'Label pertanyaan unit')+f(['profile','nameLabel'],'Label pertanyaan nama')+f(['profile','fieldLabels','nip'],'Label NIP')+f(['profile','fieldLabels','rank'],'Label pangkat/golongan')+f(['profile','fieldLabels','job'],'Label jabatan')+f(['profile','fieldLabels','level'],'Label jenjang jabatan')+f(['profile','fieldLabels','tenure'],'Label masa kerja'),1),
+                card('Bagian 2 · Kebutuhan Bangkom', f(['stepTitles',1],'Judul di navigasi')+f(['needs','title'],'Judul bagian')+f(['needs','description'],'Petunjuk bagian',true),2),
+                card('Bagian 3 · Preferensi Pelaksanaan', f(['stepTitles',2],'Judul di navigasi')+f(['schedule','title'],'Judul bagian')+f(['schedule','description'],'Petunjuk bagian',true)+f(['schedule','days','label'],'Pertanyaan hari')+f(['schedule','days','hint'],'Petunjuk hari')+f(['schedule','days','options'],'Pilihan hari (satu per baris)',true)+f(['schedule','times','label'],'Pertanyaan waktu')+f(['schedule','times','hint'],'Petunjuk waktu')+f(['schedule','times','options'],'Pilihan waktu (satu per baris)',true)+f(['schedule','methods','label'],'Pertanyaan metode')+f(['schedule','methods','hint'],'Petunjuk metode')+f(['schedule','methods','options'],'Pilihan metode (satu per baris)',true)+f(['schedule','methods','otherLabel'],'Label opsi lainnya')+f(['schedule','methods','otherPlaceholder'],'Petunjuk isian lainnya'),3),
+                card('Bagian 4 · Knowledge Sharing', f(['stepTitles',3],'Judul di navigasi')+f(['sharing','title'],'Judul bagian')+f(['sharing','description'],'Petunjuk bagian',true)+f(['sharing','question'],'Pertanyaan kesediaan')+f(['sharing','yesLabel'],'Pilihan ya')+f(['sharing','yesHint'],'Keterangan pilihan ya')+f(['sharing','noLabel'],'Pilihan tidak')+f(['sharing','noHint'],'Keterangan pilihan tidak')+f(['sharing','expertiseLabel'],'Label bidang keahlian')+f(['sharing','expertiseHint'],'Contoh bidang keahlian',true)+f(['sharing','expertisePlaceholder'],'Placeholder isian bidang keahlian'),4)
+            ].join('');
+        }
+        function updateFormField(input) {
+            const path = input.dataset.formPath.split('.');
+            let parent = formContent;
+            for (const key of path.slice(0,-1)) parent = parent[key];
+            parent[path.at(-1)] = input.dataset.formLines === 'true' ? input.value.split(/\r?\n/).map(v=>v.trim()).filter(Boolean) : input.value;
         }
 
         const SUPABASE_URL="https://gowleizcsphuydbuhfoy.supabase.co";
@@ -466,12 +500,14 @@
             const { data, error } = await adminSupabase.from('survey_config').select('config').eq('id', 'active').maybeSingle();
             if (!error && data?.config) {
                 surveyData = { sections: data.config.sections || [] };
+                formContent = data.config.formContent || JSON.parse(JSON.stringify(DEFAULT_FORM_CONTENT));
+                renderFormContentEditor();
                 document.getElementById('survey-title').value = data.config.surveyTitle || '';
                 document.getElementById('survey-desc').value = data.config.surveyDesc || '';
                 renderSections();
             }
         }
-        async function applyChanges(){if(!adminSession){alert('Silakan login admin terlebih dahulu.');return}surveyData.sections.forEach((s,i)=>{const input=document.getElementById(`sec-title-${i}`);if(input)s.title=input.value.trim()});const config={surveyTitle:document.getElementById('survey-title').value.trim(),surveyDesc:document.getElementById('survey-desc').value.trim(),sections:surveyData.sections};if(!config.surveyTitle||!config.sections.length||config.sections.some(s=>!s.title||!s.topics.length||s.topics.some(t=>!t.value.trim()))){alert('Judul, nama subkompetensi, dan minimal satu topik per subkompetensi wajib diisi.');return}const b=document.getElementById('save-config-button');b.disabled=true;b.textContent='Menyimpan…';const {error}=await adminSupabase.from('survey_config').upsert({id:'active',config,updated_at:new Date().toISOString()});b.disabled=false;b.textContent='Simpan & Terapkan';if(error){alert('Gagal menyimpan: '+error.message);return}showToast('Tersimpan. Survei live menggunakan konfigurasi baru.')}
+        async function applyChanges(){if(!adminSession){alert('Silakan login admin terlebih dahulu.');return}surveyData.sections.forEach((s,i)=>{const input=document.getElementById(`sec-title-${i}`);if(input)s.title=input.value.trim()});const config={surveyTitle:document.getElementById('survey-title').value.trim(),surveyDesc:document.getElementById('survey-desc').value.trim(),sections:surveyData.sections,formContent};if(!config.surveyTitle||!config.sections.length||config.sections.some(s=>!s.title||!s.topics.length||s.topics.some(t=>!t.value.trim()))||[formContent.schedule.days.options,formContent.schedule.times.options,formContent.schedule.methods.options].some(list=>!list.length)){alert('Judul, nama subkompetensi, dan minimal satu topik per subkompetensi wajib diisi.');return}const b=document.getElementById('save-config-button');b.disabled=true;b.textContent='Menyimpan…';const {error}=await adminSupabase.from('survey_config').upsert({id:'active',config,updated_at:new Date().toISOString()});b.disabled=false;b.textContent='Simpan & Terapkan';if(error){alert('Gagal menyimpan: '+error.message);return}showToast('Tersimpan. Survei live menggunakan konfigurasi baru.')}
         function exportConfig() {
             surveyData.sections.forEach((s, sIdx) => {
                 const titleEl = document.getElementById(`sec-title-${sIdx}`);
@@ -480,7 +516,8 @@
             const config = {
                 surveyTitle: document.getElementById('survey-title').value,
                 surveyDesc: document.getElementById('survey-desc').value,
-                sections: surveyData.sections
+                sections: surveyData.sections,
+                formContent
             };
             const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -516,7 +553,7 @@
         }
 
         // Init
-        document.addEventListener('DOMContentLoaded', async () => { renderSections(); await loadAdminState(); });
+        document.addEventListener('DOMContentLoaded', async () => { renderSections(); renderFormContentEditor(); await loadAdminState(); });
     </script>
 </body>
 </html>

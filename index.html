@@ -91,15 +91,15 @@
                 <!-- ========================================== -->
                 <div id="step-1" class="step-content active">
                     <div class="mb-6">
-                        <h2 class="text-xl font-bold text-slate-900">Profil Pegawai</h2>
-                        <p class="text-sm text-slate-500 mt-1">Pilih Unit Organisasi dan Nama Anda. Data NIP, Pangkat/Golongan, Jabatan, Jenjang, dan Masa Kerja akan terisi secara otomatis.</p>
+                        <h2 id="profile-heading" class="text-xl font-bold text-slate-900">Profil Pegawai</h2>
+                        <p id="profile-description" class="text-sm text-slate-500 mt-1">Pilih Unit Organisasi dan Nama Anda. Data NIP, Pangkat/Golongan, Jabatan, Jenjang, dan Masa Kerja akan terisi secara otomatis.</p>
                     </div>
 
                     <div class="space-y-6">
                         <!-- Unit Organisasi -->
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                1. Direktorat / Unit Organisasi <span class="text-rose-500">*</span>
+                                <span id="profile-unit-label">1. Direktorat / Unit Organisasi</span> <span class="text-rose-500">*</span>
                             </label>
                             <select id="select-unit" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition shadow-sm" required onchange="onUnitChange()">
                                 <option value="" disabled selected>-- Pilih Direktorat / Unit Organisasi --</option>
@@ -113,7 +113,7 @@
                         <!-- Nama Pegawai -->
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                2. Nama Pegawai <span class="text-rose-500">*</span>
+                                <span id="profile-name-label">2. Nama Pegawai</span> <span class="text-rose-500">*</span>
                             </label>
                             <select id="select-pegawai" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition shadow-sm" required onchange="onPegawaiChange()" disabled>
                                 <option value="" selected>-- Pilih Unit Organisasi Terlebih Dahulu --</option>
@@ -129,23 +129,23 @@
                             
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">NIP</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5"><span id="profile-nip-label">NIP</span></label>
                                     <input type="text" id="input-nip" class="w-full bg-[#f8fafc] border border-slate-200/90 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none cursor-default" placeholder="-" readonly>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Pangkat / Golongan Ruang</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5"><span id="profile-rank-label">Pangkat / Golongan Ruang</span></label>
                                     <input type="text" id="input-pangkat" class="w-full bg-[#f8fafc] border border-slate-200/90 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none cursor-default" placeholder="-" readonly>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Jabatan</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5"><span id="profile-job-label">Jabatan</span></label>
                                     <input type="text" id="input-jabatan" class="w-full bg-[#f8fafc] border border-slate-200/90 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none cursor-default" placeholder="-" readonly>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Jenjang / Kategori Jabatan</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5"><span id="profile-level-label">Jenjang / Kategori Jabatan</span></label>
                                     <input type="text" id="input-jenjang" class="w-full bg-[#f8fafc] border border-slate-200/90 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none cursor-default" placeholder="-" readonly>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Masa Kerja Organisasi</label>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5"><span id="profile-tenure-label">Masa Kerja Organisasi</span></label>
                                     <input type="text" id="input-masakerja" class="w-full bg-[#f8fafc] border border-slate-200/90 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none cursor-default" placeholder="-" readonly>
                                 </div>
                             </div>
@@ -158,8 +158,8 @@
                 <!-- ========================================== -->
                 <div id="step-2" class="step-content">
                     <div class="mb-6">
-                        <h2 class="text-xl font-bold text-slate-900">Identifikasi Kebutuhan Pengembangan Kompetensi Pegawai</h2>
-                        <p class="text-sm text-slate-500 mt-1">
+                        <h2 id="needs-heading" class="text-xl font-bold text-slate-900">Identifikasi Kebutuhan Pengembangan Kompetensi Pegawai</h2>
+                        <p id="needs-description" class="text-sm text-slate-500 mt-1">
                             Pilih topik pelatihan yang dibutuhkan untuk mendukung pelaksanaan tugas Anda. Anda dapat memilih <strong>lebih dari satu</strong> topik pada setiap subkompetensi, serta menambahkan topik lainnya jika dibutuhkan.
                         </p>
                     </div>
@@ -176,128 +176,39 @@
                 <!-- ========================================== -->
                 <div id="step-3" class="step-content">
                     <div class="mb-6">
-                        <h2 class="text-xl font-bold text-slate-900">Preferensi Pelaksanaan & Metode Pelatihan</h2>
-                        <p class="text-sm text-slate-500 mt-1">Tentukan pilihan hari, waktu, serta metode pembelajaran yang paling optimal dan sesuai preferensi Anda.</p>
+                        <h2 id="schedule-heading" class="text-xl font-bold text-slate-900">Preferensi Pelaksanaan & Metode Pelatihan</h2>
+                        <p id="schedule-description" class="text-sm text-slate-500 mt-1">Tentukan pilihan hari, waktu, serta metode pembelajaran yang paling optimal dan sesuai preferensi Anda.</p>
                     </div>
 
-                    <div class="space-y-8">
-                        <!-- 1. Hari Pelaksanaan (Senin, Selasa, Rabu, Kamis - Checkbox Bisa Pilih Lebih Dari Satu) -->
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1">
-                                1. Pilihan Hari Pelaksanaan <span class="text-rose-500">*</span>
-                            </label>
-                            <p class="text-xs text-slate-500 mb-3">(Bisa pilih lebih dari satu hari yang sesuai dengan jadwal Anda)</p>
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                <label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm">
-                                    <input type="checkbox" name="preferensi_hari[]" value="Senin" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                    <span class="text-sm font-semibold text-slate-800">Senin</span>
-                                </label>
-                                <label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm">
-                                    <input type="checkbox" name="preferensi_hari[]" value="Selasa" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                    <span class="text-sm font-semibold text-slate-800">Selasa</span>
-                                </label>
-                                <label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm">
-                                    <input type="checkbox" name="preferensi_hari[]" value="Rabu" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                    <span class="text-sm font-semibold text-slate-800">Rabu</span>
-                                </label>
-                                <label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm">
-                                    <input type="checkbox" name="preferensi_hari[]" value="Kamis" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                    <span class="text-sm font-semibold text-slate-800">Kamis</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- 2. Waktu Pelaksanaan (Checkbox Bisa Pilih Lebih Dari Satu) -->
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1">
-                                2. Preferensi Waktu / Jam Pelaksanaan <span class="text-rose-500">*</span>
-                            </label>
-                            <p class="text-xs text-slate-500 mb-3">(Bisa pilih lebih dari satu sesi)</p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm">
-                                    <input type="checkbox" name="preferensi_waktu[]" value="Sesi Pagi (08.00 – 12.00 WIB)" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                    <div>
-                                        <span class="block text-sm font-semibold text-slate-800">Sesi Pagi</span>
-                                        <span class="block text-xs text-slate-500 mt-0.5">Pukul 08.00 – 12.00 WIB</span>
-                                    </div>
-                                </label>
-                                <label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm">
-                                    <input type="checkbox" name="preferensi_waktu[]" value="Sesi Siang (13.00 – 16.00 WIB)" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                    <div>
-                                        <span class="block text-sm font-semibold text-slate-800">Sesi Siang</span>
-                                        <span class="block text-xs text-slate-500 mt-0.5">Pukul 13.00 – 16.00 WIB</span>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- 3. Metode Pelatihan yang Diinginkan (Offline, Online, Lainnya) -->
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-1">
-                                3. Metode Pelatihan yang Diinginkan <span class="text-rose-500">*</span>
-                            </label>
-                            <p class="text-xs text-slate-500 mb-3">(Bisa pilih lebih dari satu metode)</p>
-                            <div class="space-y-3">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm">
-                                        <input type="checkbox" name="metode_pelatihan[]" value="Offline Learning" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                        <div>
-                                            <span class="block text-sm font-semibold text-slate-800">Offline Learning</span>
-                                            <span class="block text-xs text-slate-500 mt-0.5">Tatap muka langsung / Klasikal / Workshop</span>
-                                        </div>
-                                    </label>
-                                    <label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm">
-                                        <input type="checkbox" name="metode_pelatihan[]" value="Online Learning" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                                        <div>
-                                            <span class="block text-sm font-semibold text-slate-800">Online Learning</span>
-                                            <span class="block text-xs text-slate-500 mt-0.5">Daring / Virtual Zoom / MOOC / E-learning</span>
-                                        </div>
-                                    </label>
-                                </div>
-
-                                <!-- Opsi Lainnya untuk Metode -->
-                                <div class="border border-dashed border-slate-300 rounded-xl p-4 bg-slate-50/40">
-                                    <label class="flex items-center gap-3 cursor-pointer group mb-2">
-                                        <input type="checkbox" id="check-metode-lainnya" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" onchange="toggleMetodeLainnya(this)">
-                                        <span class="text-sm font-semibold text-slate-700 group-hover:text-blue-700">Metode Lainnya (Opsional)</span>
-                                    </label>
-                                    <div id="wrapper-metode-lainnya" class="hidden pl-7">
-                                        <input type="text" id="input-metode-lainnya" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white" placeholder="Contoh: Hybrid, Mentoring 1-on-1, Coaching, Belajar Mandiri...">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
+                    <div id="schedule-options" class="space-y-8"></div>
                 </div>
 
-                <!-- ========================================== -->
                 <!-- STEP 4: KESEDIAAN BERBAGI PENGETAHUAN      -->
                 <!-- ========================================== -->
                 <div id="step-4" class="step-content">
                     <div class="mb-6">
-                        <h2 class="text-xl font-bold text-slate-900">Kesediaan Berbagi Pengetahuan</h2>
-                        <p class="text-sm text-slate-500 mt-1">Pemetaan potensi transfer pengetahuan (Knowledge Sharing / Co-learning) antar pegawai di lingkungan internal Deputi I.</p>
+                        <h2 id="sharing-heading" class="text-xl font-bold text-slate-900">Kesediaan Berbagi Pengetahuan</h2>
+                        <p id="sharing-description" class="text-sm text-slate-500 mt-1">Pemetaan potensi transfer pengetahuan (Knowledge Sharing / Co-learning) antar pegawai di lingkungan internal Deputi I.</p>
                     </div>
 
                     <div class="space-y-6">
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-3">
-                                Apakah Anda bersedia berkontribusi sebagai narasumber internal (Knowledge Sharing)? <span class="text-rose-500">*</span>
+                                <span id="sharing-question">Apakah Anda bersedia berkontribusi sebagai narasumber internal (Knowledge Sharing)?</span> <span class="text-rose-500">*</span>
                             </label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm">
                                     <input type="radio" name="bersedia_berbagi" value="ya" class="w-4 h-4 text-blue-600 focus:ring-blue-500" required onchange="toggleBerbagi(true)">
                                     <div>
-                                        <span class="block text-sm font-semibold text-slate-800">Ya, Bersedia</span>
-                                        <span class="block text-xs text-slate-500 mt-0.5">Siap berbagi keahlian/pengalaman teknis</span>
+                                        <span id="sharing-yes-label" class="block text-sm font-semibold text-slate-800">Ya, Bersedia</span>
+                                        <span id="sharing-yes-hint" class="block text-xs text-slate-500 mt-0.5">Siap berbagi keahlian/pengalaman teknis</span>
                                     </div>
                                 </label>
                                 <label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm">
                                     <input type="radio" name="bersedia_berbagi" value="tidak" class="w-4 h-4 text-blue-600 focus:ring-blue-500" onchange="toggleBerbagi(false)">
                                     <div>
-                                        <span class="block text-sm font-semibold text-slate-800">Belum Bersedia</span>
-                                        <span class="block text-xs text-slate-500 mt-0.5">Fokus sebagai peserta terlebih dahulu</span>
+                                        <span id="sharing-no-label" class="block text-sm font-semibold text-slate-800">Belum Bersedia</span>
+                                        <span id="sharing-no-hint" class="block text-xs text-slate-500 mt-0.5">Fokus sebagai peserta terlebih dahulu</span>
                                     </div>
                                 </label>
                             </div>
@@ -306,10 +217,10 @@
                         <!-- Kolom Tambahan Jika Ya -->
                         <div id="wrapper-bidang-keahlian" class="hidden bg-blue-50/50 rounded-xl p-5 border border-blue-200 transition">
                             <label class="block text-sm font-bold text-blue-900 mb-1">
-                                Bidang keahlian atau pengalaman yang dapat Anda bagikan: <span class="text-rose-500">*</span>
+                                <span id="sharing-expertise-label">Bidang keahlian atau pengalaman yang dapat Anda bagikan:</span> <span class="text-rose-500">*</span>
                             </label>
-                            <p class="text-xs text-slate-600 mb-3">Contoh: Best practices analisis regulasi daerah, teknik visualisasi data kebijakan, tips public consultation, dll.</p>
-                            <textarea id="textarea-keahlian" rows="3" class="w-full px-4 py-3 rounded-lg border border-blue-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm" placeholder="Tuliskan bidang keahlian atau pengalaman kerja Anda di sini..."></textarea>
+                            <p id="sharing-expertise-hint" class="text-xs text-slate-600 mb-3">Contoh: Best practices analisis regulasi daerah, teknik visualisasi data kebijakan, tips public consultation, dll.</p>
+                            <textarea id="textarea-keahlian" data-config-placeholder="sharing-expertise" rows="3" class="w-full px-4 py-3 rounded-lg border border-blue-200 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm" placeholder="Tuliskan bidang keahlian atau pengalaman kerja Anda di sini..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -349,6 +260,7 @@
         const SUPABASE_ANON_KEY = "sb_publishable_iYfTy-1HABdhlGGMhB8AqA_4lO3Harp";
         let supabaseClient = null;
         const DEFAULT_SURVEY_CONFIG = {"sections": [{"id": 1, "title": "Analisis Kebijakan", "color": 1, "topics": [{"value": "Riset & Analisis Kebijakan", "desc": "Identifikasi masalah; perumusan pertanyaan; pengolahan data; penyusunan policy brief/paper."}, {"value": "Perumusan Kebijakan Publik", "desc": "Penyusunan alternatif kebijakan; cost-benefit analisis; rekomendasi naskah kebijakan."}, {"value": "Policy Impact Assessment", "desc": "Penilaian dampak ekonomi; sosial; kelembagaan; serta indikator dampak kebijakan."}, {"value": "Monitoring & Evaluasi Kebijakan", "desc": "Desain monitoring; indikator kinerja kebijakan; evaluasi efektivitas dan efisiensi."}]}, {"id": 2, "title": "Advokasi Kebijakan", "color": 2, "topics": [{"value": "Advokasi & Komunikasi Kebijakan", "desc": "Strategi advokasi; pemetaan aktor; penyusunan pesan; policy pitching."}, {"value": "Stakeholder Engagement (Kebijakan)", "desc": "Analisis kepentingan/pengaruh stakeholder; teknik kolaborasi; pengelolaan konflik."}, {"value": "Public Consultation", "desc": "Desain instrumen konsultasi publik; fasilitasi forum; integrasi hasil konsultasi."}, {"value": "Regulatory Impact Assessment (RIA)", "desc": "Identifikasi masalah regulasi; penyusunan opsi regulasi; analisis dampak alternatif regulasi."}, {"value": "Legal Drafting", "desc": "Teknik penyusunan peraturan; perumusan norma hukum; harmonisasi & sinkronisasi regulasi."}, {"value": "Inovasi Kebijakan & Program", "desc": "Design Thinking kebijakan; co-creation; perancangan & implementasi inovasi."}]}, {"id": 3, "title": "Manajemen Stakeholders", "color": 3, "topics": [{"value": "Stakeholder Engagement (Pelayanan Publik)", "desc": "Membangun engagement; komunikasi stakeholder; kolaborasi & pengelolaan hubungan."}, {"value": "Co-Creation & Collaborative Innovation", "desc": "Co-design solusi pelayanan publik; collaborative problem solving pemerintah & mitra."}]}, {"id": 4, "title": "Manajemen Ekosistem Pelayanan Publik", "color": 4, "topics": [{"value": "Adaptive Governance", "desc": "Pengambilan keputusan adaptif; respons terhadap perubahan; ketidakpastian tata kelola."}, {"value": "Reformasi Birokrasi", "desc": "Transformasi tata kelola; penyederhanaan birokrasi; perubahan budaya kerja."}, {"value": "Manajemen Perubahan (Change Management)", "desc": "Analisis kesiapan organisasi; strategi komunikasi; pengelolaan resistensi perubahan."}, {"value": "Public Sector Innovation", "desc": "Ideasi inovasi pelayanan publik; model implementasi; scaling-up inovasi sektor publik."}, {"value": "Design Thinking", "desc": "Empathize; Define; Ideate; Prototype; dan Testing untuk perbaikan layanan publik."}]}], "surveyTitle": "Survei Kebutuhan Pengembangan Kompetensi Pegawai", "surveyDesc": "Survei ini bertujuan untuk memetakan kebutuhan pengembangan kompetensi pegawai Deputi I LAN RI pada aspek kompetensi inti. Hasilnya digunakan untuk mengidentifikasi prioritas program pelatihan dan pengembangan pegawai secara langsung dan terarah."};
+        const DEFAULT_FORM_CONTENT = {"stepTitles":["Bagian 1: Profil Pegawai","Bagian 2: Kebutuhan Pengembangan Kompetensi","Bagian 3: Preferensi Pelaksanaan","Bagian 4: Knowledge Sharing"],"profile":{"title":"Profil Pegawai","description":"Pilih Unit Organisasi dan Nama Anda. Data NIP, Pangkat/Golongan, Jabatan, Jenjang, dan Masa Kerja akan terisi secara otomatis.","unitLabel":"1. Direktorat / Unit Organisasi","nameLabel":"2. Nama Pegawai","fieldLabels":{"nip":"NIP","rank":"Pangkat / Golongan Ruang","job":"Jabatan","level":"Jenjang / Kategori Jabatan","tenure":"Masa Kerja Organisasi"}},"needs":{"title":"Identifikasi Kebutuhan Pengembangan Kompetensi Pegawai","description":"Pilih topik pelatihan yang dibutuhkan untuk mendukung pelaksanaan tugas Anda. Anda dapat memilih lebih dari satu topik pada setiap subkompetensi, serta menambahkan topik lainnya jika dibutuhkan."},"schedule":{"title":"Preferensi Pelaksanaan & Metode Pelatihan","description":"Tentukan pilihan hari, waktu, serta metode pembelajaran yang paling optimal dan sesuai preferensi Anda.","days":{"label":"1. Pilihan Hari Pelaksanaan","hint":"(Bisa pilih lebih dari satu hari yang sesuai dengan jadwal Anda)","options":["Senin","Selasa","Rabu","Kamis"]},"times":{"label":"2. Preferensi Waktu / Jam Pelaksanaan","hint":"(Bisa pilih lebih dari satu sesi)","options":["Sesi Pagi (08.00 – 12.00 WIB)","Sesi Siang (13.00 – 16.00 WIB)"]},"methods":{"label":"3. Metode Pelatihan yang Diinginkan","hint":"(Bisa pilih lebih dari satu metode)","options":["Offline Learning","Online Learning"],"otherLabel":"Metode Lainnya (Opsional)","otherPlaceholder":"Contoh: Hybrid, Mentoring 1-on-1, Coaching, Belajar Mandiri..."}},"sharing":{"title":"Kesediaan Berbagi Pengetahuan","description":"Pemetaan potensi transfer pengetahuan (Knowledge Sharing / Co-learning) antar pegawai di lingkungan internal Deputi I.","question":"Apakah Anda bersedia berkontribusi sebagai narasumber internal (Knowledge Sharing)?","yesLabel":"Ya, Bersedia","yesHint":"Siap berbagi keahlian/pengalaman teknis","noLabel":"Belum Bersedia","noHint":"Fokus sebagai peserta terlebih dahulu","expertiseLabel":"Bidang keahlian atau pengalaman yang dapat Anda bagikan:","expertiseHint":"Contoh: Best practices analisis regulasi daerah, teknik visualisasi data kebijakan, tips public consultation, dll.","expertisePlaceholder":"Tuliskan bidang keahlian atau pengalaman kerja Anda di sini..."}};
         let surveyConfig = DEFAULT_SURVEY_CONFIG;
         const DRAFT_STORAGE_KEY = "survey_bangkom_draft_v1";
         let draftSaveTimer = null;
@@ -359,10 +271,46 @@
         }
 
         function escapeSurveyText(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        function renderSurveyFormContent(content) {
+            if (!content) return;
+            const setText = (id, value) => { const element = document.getElementById(id); if (element && value) element.textContent = value; };
+            setText('profile-heading', content.profile?.title);
+            setText('profile-description', content.profile?.description);
+            setText('profile-unit-label', content.profile?.unitLabel);
+            setText('profile-name-label', content.profile?.nameLabel);
+            setText('profile-nip-label', content.profile?.fieldLabels?.nip);
+            setText('profile-rank-label', content.profile?.fieldLabels?.rank);
+            setText('profile-job-label', content.profile?.fieldLabels?.job);
+            setText('profile-level-label', content.profile?.fieldLabels?.level);
+            setText('profile-tenure-label', content.profile?.fieldLabels?.tenure);
+            setText('needs-heading', content.needs?.title);
+            setText('needs-description', content.needs?.description);
+            setText('schedule-heading', content.schedule?.title);
+            setText('schedule-description', content.schedule?.description);
+            setText('sharing-heading', content.sharing?.title);
+            setText('sharing-description', content.sharing?.description);
+            setText('sharing-question', content.sharing?.question);
+            setText('sharing-yes-label', content.sharing?.yesLabel);
+            setText('sharing-yes-hint', content.sharing?.yesHint);
+            setText('sharing-no-label', content.sharing?.noLabel);
+            setText('sharing-no-hint', content.sharing?.noHint);
+            setText('sharing-expertise-label', content.sharing?.expertiseLabel);
+            setText('sharing-expertise-hint', content.sharing?.expertiseHint);
+            const expertise = document.getElementById('textarea-keahlian');
+            if (expertise && content.sharing?.expertisePlaceholder) expertise.placeholder = content.sharing.expertisePlaceholder;
+            if (Array.isArray(content.stepTitles) && content.stepTitles.length === 4) stepTitles = content.stepTitles;
+            document.getElementById('step-title').innerText = stepTitles[currentStep - 1];
+            const q = content.schedule || {};
+            const makeOptions = (items, name) => (items || []).map(item => `<label class="border border-slate-200 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/20 transition shadow-sm"><input type="checkbox" name="${name}[]" value="${escapeSurveyText(item)}" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"><span class="text-sm font-semibold text-slate-800">${escapeSurveyText(item)}</span></label>`).join('');
+            const group = (key, name, cols) => `<div><label class="block text-sm font-semibold text-slate-700 mb-1">${escapeSurveyText(q[key]?.label || '')} <span class="text-rose-500">*</span></label><p class="text-xs text-slate-500 mb-3">${escapeSurveyText(q[key]?.hint || '')}</p><div class="grid ${cols} gap-3">${makeOptions(q[key]?.options, name)}</div></div>`;
+            document.getElementById('schedule-options').innerHTML = `${group('days','preferensi_hari','grid-cols-2 sm:grid-cols-4')}${group('times','preferensi_waktu','grid-cols-1 sm:grid-cols-2')}<div><label class="block text-sm font-semibold text-slate-700 mb-1">${escapeSurveyText(q.methods?.label || '')} <span class="text-rose-500">*</span></label><p class="text-xs text-slate-500 mb-3">${escapeSurveyText(q.methods?.hint || '')}</p><div class="space-y-3"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${makeOptions(q.methods?.options,'metode_pelatihan')}</div><div class="border border-dashed border-slate-300 rounded-xl p-4 bg-slate-50/40"><label class="flex items-center gap-3 cursor-pointer group mb-2"><input type="checkbox" id="check-metode-lainnya" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" onchange="toggleMetodeLainnya(this)"><span class="text-sm font-semibold text-slate-700">${escapeSurveyText(q.methods?.otherLabel || 'Metode Lainnya')}</span></label><div id="wrapper-metode-lainnya" class="hidden pl-7"><input type="text" id="input-metode-lainnya" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white" placeholder="${escapeSurveyText(q.methods?.otherPlaceholder || '')}"></div></div></div></div>`;
+        }
+
         function renderSurveyTopics(config) {
             if (!config?.sections?.length) return; surveyConfig = config;
             if (config.surveyTitle) { document.getElementById('survey-title').textContent=config.surveyTitle; document.title=config.surveyTitle; }
             if (config.surveyDesc) document.getElementById('survey-description').textContent=config.surveyDesc;
+            renderSurveyFormContent(config.formContent || DEFAULT_FORM_CONTENT);
             const palette=['blue','emerald','amber','purple'];
             document.getElementById('topics-container').innerHTML=config.sections.map((sec,i)=>{
                 const color=palette[((Number(sec.color)||i+1)-1)%4], n=i+1;
@@ -375,7 +323,7 @@
         function saveDraft(){const draft={currentStep,savedAt:new Date().toISOString(),fields:draftControls().map((el,i)=>({key:el.id||`${el.name||'field'}:${el.value}`,value:['checkbox','radio'].includes(el.type)?el.checked:el.value}))};try{localStorage.setItem(DRAFT_STORAGE_KEY,JSON.stringify(draft));document.getElementById('draft-status').textContent='Draf tersimpan di perangkat ini';}catch(_){document.getElementById('draft-status').textContent='Penyimpanan draf tidak tersedia';}}
         function scheduleDraftSave(){document.getElementById('draft-status').textContent='Menyimpan draf…';clearTimeout(draftSaveTimer);draftSaveTimer=setTimeout(saveDraft,250);}
         function restoreDraft(){let draft;try{draft=JSON.parse(localStorage.getItem(DRAFT_STORAGE_KEY)||'null')}catch(_){return}if(!draft?.fields)return;const els=draftControls(), values=new Map(draft.fields.map(x=>[x.key,x.value])), byId=new Map(els.filter(x=>x.id).map(x=>[x.id,x]));const unit=byId.get('select-unit');if(unit&&values.has(unit.id)){unit.value=values.get(unit.id);onUnitChange()}const emp=byId.get('select-pegawai');if(emp&&values.has(emp.id)){emp.value=values.get(emp.id);onPegawaiChange()}els.forEach((el,i)=>{const key=el.id||`${el.name||'field'}:${el.value}`;if(!values.has(key)||['select-unit','select-pegawai'].includes(el.id))return;if(['checkbox','radio'].includes(el.type))el.checked=Boolean(values.get(key));else if(!el.readOnly)el.value=values.get(key)});for(let i=1;i<=(surveyConfig?.sections?.length||4);i++){const c=document.getElementById(`check-lainnya-${i}`),w=document.getElementById(`wrapper-lainnya-${i}`);if(c&&w)w.classList.toggle('hidden',!c.checked)}const sharing=document.querySelector('input[name="bersedia_berbagi"]:checked');if(sharing)toggleBerbagi(sharing.value==='ya');const step=Math.min(4,Math.max(1,Number(draft.currentStep)||1));document.querySelectorAll('.step-content').forEach(x=>x.classList.toggle('active',x.id===`step-${step}`));currentStep=step;document.getElementById('step-title').innerText=stepTitles[step-1];document.getElementById('step-number').innerText=`Halaman ${step} dari ${totalSteps}`;document.getElementById('progress-bar').style.width=`${step/totalSteps*100}%`;document.getElementById('btn-prev').classList.toggle('hidden',step===1);document.getElementById('btn-next').classList.toggle('hidden',step===totalSteps);document.getElementById('btn-submit').classList.toggle('hidden',step!==totalSteps);}
-        async function initializeSurveyPage(){renderSurveyTopics(DEFAULT_SURVEY_CONFIG);await loadSurveyConfig();restoreDraft();document.getElementById('surveyForm').addEventListener('input',scheduleDraftSave);document.getElementById('surveyForm').addEventListener('change',scheduleDraftSave);}
+        async function initializeSurveyPage(){renderSurveyTopics({...DEFAULT_SURVEY_CONFIG,formContent:DEFAULT_FORM_CONTENT});await loadSurveyConfig();restoreDraft();document.getElementById('surveyForm').addEventListener('input',scheduleDraftSave);document.getElementById('surveyForm').addEventListener('change',scheduleDraftSave);}
 
         // ========================================================
         // DATABASE 58 PEGAWAI DEPUTI I LAN RI
@@ -535,7 +483,7 @@
         // Stepper Navigation
         let currentStep = 1;
         const totalSteps = 4;
-        const stepTitles = [
+        let stepTitles = [
             "Bagian 1: Profil Pegawai",
             "Bagian 2: Kebutuhan Pelatihan Pegawai",
             "Bagian 3: Preferensi Pelaksanaan & Metode",
