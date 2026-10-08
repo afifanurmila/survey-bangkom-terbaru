@@ -1,6 +1,8 @@
 -- Jalankan sekali di Supabase SQL Editor.
 create table if not exists public.survey_admins (user_id uuid primary key references auth.users(id) on delete cascade);
-create table if not exists public.survey_config (id text primary key check (id = 'active'), config jsonb not null, updated_at timestamptz not null default now());
+create table if not exists public.survey_config (id text primary key, config jsonb not null, updated_at timestamptz not null default now());
+-- Tabel lama bisa memiliki CHECK id berbeda; RLS di bawah sudah membatasi operasi aplikasi ke id 'active'.
+alter table public.survey_config drop constraint if exists survey_config_id_check;
 alter table public.survey_admins enable row level security;
 alter table public.survey_config enable row level security;
 revoke all on public.survey_admins from anon, authenticated;
