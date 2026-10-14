@@ -219,6 +219,16 @@
 
                         <!-- Kolom Tambahan Jika Ya -->
                         <div id="wrapper-bidang-keahlian" class="hidden bg-blue-50/50 rounded-xl p-5 border border-blue-200 transition">
+                            <fieldset class="mb-5">
+                                <legend class="block text-sm font-bold text-blue-900 mb-1">Dalam bentuk apa Anda bersedia berbagi pengetahuan? <span class="text-rose-500">*</span></legend>
+                                <p class="text-xs text-slate-600 mb-3">Pilih semua bentuk yang sesuai.</p>
+                                <div class="space-y-2">
+                                    <label class="flex items-start gap-2 text-sm text-slate-700"><input type="checkbox" name="sharing_formats[]" value="Coaching" class="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300"><span><strong>Coaching</strong> <span class="text-xs text-slate-500">— Mendampingi rekan untuk mengembangkan keterampilan atau menyelesaikan tantangan kerja tertentu.</span></span></label>
+                                    <label class="flex items-start gap-2 text-sm text-slate-700"><input type="checkbox" name="sharing_formats[]" value="Mentoring" class="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300"><span><strong>Mentoring</strong> <span class="text-xs text-slate-500">— Berbagi pengalaman dan memberi arahan untuk mendukung pengembangan kerja atau karier.</span></span></label>
+                                    <label class="flex items-start gap-2 text-sm text-slate-700"><input type="checkbox" name="sharing_formats[]" value="Knowledge sharing" class="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300"><span><strong>Knowledge sharing</strong> <span class="text-xs text-slate-500">— Membagikan pengetahuan atau pengalaman melalui sesi berbagi, presentasi, atau diskusi.</span></span></label>
+                                    <label class="flex items-start gap-2 text-sm text-slate-700"><input type="checkbox" name="sharing_formats[]" value="Community of Practice (CoP)" class="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300"><span><strong>Community of Practice (CoP)</strong> <span class="text-xs text-slate-500">— Bergabung dalam kelompok belajar rutin untuk membahas isu dan berbagi praktik baik di bidang yang sama.</span></span></label>
+                                </div>
+                            </fieldset>
                             <label class="block text-sm font-bold text-blue-900 mb-1">
                                 <span id="sharing-expertise-label">Bidang keahlian atau pengalaman yang dapat Anda bagikan:</span> <span class="text-rose-500">*</span>
                             </label>
@@ -502,6 +512,7 @@
                 wrapper.classList.add('hidden');
                 textarea.required = false;
                 textarea.value = '';
+                document.querySelectorAll('input[name="sharing_formats[]"]').forEach(input => input.checked = false);
             }
         }
 
@@ -614,6 +625,11 @@
                 return;
             }
             if (sharing.value === 'ya') {
+                const formats = Array.from(document.querySelectorAll('input[name="sharing_formats[]"]:checked')).map(el => el.value);
+                if (formats.length === 0) {
+                    alert('Silakan pilih minimal satu bentuk berbagi pengetahuan.');
+                    return;
+                }
                 const keahlian = document.getElementById('textarea-keahlian').value.trim();
                 if (!keahlian) {
                     alert('Mohon sebutkan bidang keahlian atau pengalaman yang dapat Anda bagikan.');
@@ -643,6 +659,7 @@
             }
 
             const additionalAnswers={strategi_pembelajaran:Array.from(document.querySelectorAll('input[name="strategi_pembelajaran[]"]:checked')).map(el=>el.value)};
+            additionalAnswers.bentuk_berbagi = sharing.value === 'ya' ? Array.from(document.querySelectorAll('input[name="sharing_formats[]"]:checked')).map(el => el.value) : [];
             (surveyConfig?.formContent?.customQuestions||[]).forEach(q=>{
                 const controls=Array.from(document.querySelectorAll(`[name^="custom_${q.id}"]`));
                 let answer;
