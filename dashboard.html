@@ -363,6 +363,11 @@
         // State Dashboard
         let allResponses = [];
         let chartInstances = {};
+        function escapeDashboardHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char])); }
+        function getOpenBangkomAnswer(response) {
+            const value = response.jawaban_tambahan?.kebutuhan_bangkom;
+            return typeof value === 'object' && value ? value.answer || '' : value || '';
+        }
 
         // Definisi Kategori Subkompetensi untuk Warna Chart
         const TOPIK_CATEGORIES = {
@@ -863,6 +868,8 @@
             const waktuList = Array.isArray(data.preferensi_waktu) ? data.preferensi_waktu.join(', ') : '-';
             const metodeList = Array.isArray(data.metode_pelatihan) ? data.metode_pelatihan.join(', ') : '-';
             const sharingFormats = Array.isArray(data.jawaban_tambahan?.bentuk_berbagi) ? data.jawaban_tambahan.bentuk_berbagi.join(', ') : '-';
+            const openNeeds = data.jawaban_tambahan?.kebutuhan_bangkom;
+            const openNeedsAnswer = getOpenBangkomAnswer(data);
 
             modalContent.innerHTML = `
                 <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
@@ -891,6 +898,7 @@
                             <p class="text-slate-600 italic mt-0.5">${data.topik_lainnya.join(', ')}</p>
                         </div>
                     ` : ''}
+                    ${openNeedsAnswer ? `<div class="mt-3 pt-3 border-t border-slate-100"><span class="font-bold text-slate-700">${escapeDashboardHtml(typeof openNeeds === 'object' && openNeeds.question ? openNeeds.question : 'Kebutuhan atau tantangan kerja:')}</span><p class="text-slate-600 mt-1 whitespace-pre-line">${escapeDashboardHtml(openNeedsAnswer)}</p></div>` : ''}
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -933,7 +941,7 @@
                 "ID", "Waktu Kirim", "Nama Pegawai", "NIP", "Pangkat Golongan", 
                 "Jabatan", "Jenjang Jabatan", "Masa Kerja", "Unit Organisasi", 
                 "Topik Pelatihan", "Topik Lainnya", "Preferensi Hari", 
-                "Preferensi Waktu", "Metode Pelatihan", "Strategi Pembelajaran & Pertanyaan Tambahan", "Bersedia Berbagi", "Bidang Keahlian"
+                "Preferensi Waktu", "Metode Pelatihan", "Strategi Pembelajaran & Pertanyaan Tambahan", "Kebutuhan Bangkom Terbuka", "Bersedia Berbagi", "Bidang Keahlian"
             ];
 
             const rows = allResponses.map(r => [
@@ -952,6 +960,7 @@
                 `"${Array.isArray(r.preferensi_waktu) ? r.preferensi_waktu.join("; ") : ""}"`,
                 `"${Array.isArray(r.metode_pelatihan) ? r.metode_pelatihan.join("; ") : ""}"`,
                 `"${JSON.stringify(r.jawaban_tambahan || {}).replace(/"/g, '""')}"`,
+                `"${String(getOpenBangkomAnswer(r)).replace(/"/g, '""')}"`,
                 r.bersedia_berbagi || "",
                 `"${(r.bidang_keahlian || "").replace(/"/g, '""')}"`
             ]);
